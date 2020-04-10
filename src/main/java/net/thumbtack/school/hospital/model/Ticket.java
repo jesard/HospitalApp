@@ -3,8 +3,13 @@ package net.thumbtack.school.hospital.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+// REVU пока неясно, куда этот класс относится, где будет на него ссылка
+// и нужен ли он в таком виде вообще 
+// тикет по идее (если не брать комиссии во внимание) привязывается к приему, то есть к Slot
+// а в Slot время и так есть
 public class Ticket {
 
+	// REVU вместо этого должно быть private Doctor doctor;
     private int doctorId;
     private String room;
     private LocalDate date;

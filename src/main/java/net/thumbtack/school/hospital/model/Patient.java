@@ -11,6 +11,7 @@ public class Patient extends User {
     private String email;
     private String address;
     private String phone;
+    // REVU см. REVU в классе Doctor
     private Map<LocalDate, List<Ticket>> tickets = new HashMap<>();
 
     public Patient(String firstName, String lastName, String login, String password, String email, String address, String phone) {

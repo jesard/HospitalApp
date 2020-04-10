@@ -8,6 +8,11 @@ public class Doctor extends User {
 
     private String speciality;
     private String room;
+    // REVU можно, конечно, и Map, даже логично
+    // но можно и просто List<DaySchedule>
+    // в нем же дата есть, а поиск , хоть и линейный, тут не будет медленным, так как элементов очень мало
+    // на Ваше усмотрение
+    // если оставите Map - надо будет разобраться, как его с помощью DAO получить
     private Map<LocalDate, DaySchedule> schedule = new HashMap<>();
 
     public Doctor(String firstName, String lastName, String login, String password, String speciality, String room) {
