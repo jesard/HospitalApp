@@ -1,17 +1,31 @@
 package net.thumbtack.school.hospital.model;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 public class DaySchedule {
 
     private LocalDate date;
-    // REVU а нужны ли timeStart и timeEnd ? 
-    // timeStart - это время из  detailedSchedule.get(0)
-    // timeEnd - это время из  detailedSchedule.get(last)
-    private LocalTime timeStart;
-    private LocalTime timeEnd;
-    private List<Slot> detailedSchedule;
+    private List<Slot> slotSchedule;
 
+    public DaySchedule(LocalDate date, List<Slot> detailedSchedule) {
+        this.date = date;
+        this.slotSchedule = detailedSchedule;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public List<Slot> getSlotSchedule() {
+        return slotSchedule;
+    }
+
+    public void setSlotSchedule(List<Slot> slotSchedule) {
+        this.slotSchedule = slotSchedule;
+    }
 }

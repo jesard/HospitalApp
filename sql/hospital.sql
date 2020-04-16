@@ -9,7 +9,7 @@ lastName VARCHAR(50) NOT NULL,
 patronymic VARCHAR(50) DEFAULT NULL,
 login VARCHAR(50) NOT NULL,
 password VARCHAR(50) NOT NULL,
-descriptor VARCHAR(50) NOT NULL,
+descriptor ENUM('admin','doctor','patient') NOT NULL,
 PRIMARY KEY (id),
 KEY firstName (firstName),
 KEY lastName (lastName),
@@ -51,26 +51,32 @@ FOREIGN KEY (speciality_id) REFERENCES speciality (id) ON DELETE SET NULL,
 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-CREATE TABLE general_schedule (
+CREATE TABLE date_schedule (
 id INT(11) NOT NULL AUTO_INCREMENT, 
 date DATE NOT NULL,
-day_of_week VARCHAR(50) DEFAULT NULL,
-time_start TIME NOT NULL,
-time_end TIME NOT NULL,
-duration INT(11) NOT NULL,
+PRIMARY KEY (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE slot_schedule (
+id INT(11) NOT NULL AUTO_INCREMENT, 
+slot_start TIME NOT NULL,
+slot_end TIME NOT NULL,
 doctor_id INT(11) NOT NULL,
+patient_id INT(11) DEFAULT NULL,
 PRIMARY KEY (id),
+FOREIGN KEY (patient_id) REFERENCES patient (id) ON DELETE SET NULL,
 FOREIGN KEY (doctor_id) REFERENCES doctor (id) ON DELETE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-CREATE TABLE detailed_schedule (
-id INT(11) NOT NULL AUTO_INCREMENT, 
-slot_start DATETIME NOT NULL,
-slot_end DATETIME NOT NULL,
-doctor_id INT(11) NOT NULL,
+CREATE TABLE date_slot (
+id INT(11) NOT NULL AUTO_INCREMENT,
+slot_id INT(11) NOT NULL,
+date_id INT(11) NOT NULL,
 PRIMARY KEY (id),
-FOREIGN KEY (doctor_id) REFERENCES doctor (id) ON DELETE CASCADE
+FOREIGN KEY (slot_id) REFERENCES slot_schedule (id) ON DELETE CASCADE,
+FOREIGN KEY (date_id) REFERENCES date_schedule (id) ON DELETE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
 
 CREATE TABLE patient (
 id INT(11) NOT NULL AUTO_INCREMENT,

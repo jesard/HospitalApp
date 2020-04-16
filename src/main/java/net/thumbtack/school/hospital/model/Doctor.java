@@ -1,19 +1,14 @@
 package net.thumbtack.school.hospital.model;
 
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Doctor extends User {
 
     private String speciality;
     private String room;
-    // REVU можно, конечно, и Map, даже логично
-    // но можно и просто List<DaySchedule>
-    // в нем же дата есть, а поиск , хоть и линейный, тут не будет медленным, так как элементов очень мало
-    // на Ваше усмотрение
-    // если оставите Map - надо будет разобраться, как его с помощью DAO получить
-    private Map<LocalDate, DaySchedule> schedule = new HashMap<>();
+    private List<DaySchedule> schedule = new ArrayList<>();
 
     public Doctor(String firstName, String lastName, String login, String password, String speciality, String room) {
         super(firstName, lastName, login, password);
@@ -35,5 +30,13 @@ public class Doctor extends User {
 
     public void setRoom(String room) {
         this.room = room;
+    }
+
+    public List<DaySchedule> getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(List<DaySchedule> schedule) {
+        this.schedule = schedule;
     }
 }

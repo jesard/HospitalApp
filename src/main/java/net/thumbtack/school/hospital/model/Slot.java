@@ -6,7 +6,34 @@ public class Slot {
 
     private LocalTime timeStart;
     private LocalTime timeEnd;
-    private boolean free;
-    // REVU private Patient patient. Не надо экспонировать реляционую модель в классах Явы
-    private int patientId;
+    private Patient patient;
+
+    public Slot(LocalTime timeStart, LocalTime timeEnd) {
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+    }
+
+    public LocalTime getTimeStart() {
+        return timeStart;
+    }
+
+    public void setTimeStart(LocalTime timeStart) {
+        this.timeStart = timeStart;
+    }
+
+    public LocalTime getTimeEnd() {
+        return timeEnd;
+    }
+
+    public void setTimeEnd(LocalTime timeEnd) {
+        this.timeEnd = timeEnd;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
 }

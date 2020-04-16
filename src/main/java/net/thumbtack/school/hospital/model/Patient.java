@@ -1,18 +1,14 @@
 package net.thumbtack.school.hospital.model;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Patient extends User {
 
     private String email;
     private String address;
     private String phone;
-    // REVU см. REVU в классе Doctor
-    private Map<LocalDate, List<Ticket>> tickets = new HashMap<>();
+    private List<Ticket> tickets = new ArrayList<>();
 
     public Patient(String firstName, String lastName, String login, String password, String email, String address, String phone) {
         super(firstName, lastName, login, password);
