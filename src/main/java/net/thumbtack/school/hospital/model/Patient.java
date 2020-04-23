@@ -1,14 +1,17 @@
 package net.thumbtack.school.hospital.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class Patient extends User {
 
     private String email;
     private String address;
     private String phone;
-    private List<Ticket> tickets = new ArrayList<>();
+    private List<DaySchedule> tickets = new ArrayList<>();
 
     public Patient(String firstName, String lastName, String login, String password, String email, String address, String phone) {
         super(firstName, lastName, login, password);
