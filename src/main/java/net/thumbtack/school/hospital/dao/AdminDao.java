@@ -1,4 +1,11 @@
 package net.thumbtack.school.hospital.dao;
 
-public class AdminDao {
+import net.thumbtack.school.hospital.model.Admin;
+import net.thumbtack.school.hospital.model.User;
+
+public interface AdminDao extends UserDao {
+
+    void insertAdmin(Admin admin);
+
+    Admin getAdmin(String login);
 }

@@ -2,10 +2,12 @@ package net.thumbtack.school.hospital.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class Doctor extends User {
 
+    private int id;
     private String speciality;
     private String room;
     private List<DaySchedule> schedule = new ArrayList<>();
@@ -38,5 +40,30 @@ public class Doctor extends User {
 
     public void setSchedule(List<DaySchedule> schedule) {
         this.schedule = schedule;
+    }
+
+    @Override
+    public int getUserId() {
+        return id;
+    }
+
+    @Override
+    public void setUserId(int userId) {
+        this.id = userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Doctor)) return false;
+        Doctor doctor = (Doctor) o;
+        return  Objects.equals(getSpeciality(), doctor.getSpeciality()) &&
+                Objects.equals(getRoom(), doctor.getRoom()) &&
+                Objects.equals(getSchedule(), doctor.getSchedule());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSpeciality(), getRoom(), getSchedule());
     }
 }

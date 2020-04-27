@@ -34,7 +34,7 @@ UNIQUE KEY name (name)
 CREATE TABLE admin (
 id INT(11) NOT NULL AUTO_INCREMENT,
 position VARCHAR(50) NOT NULL,
-user_id INT(11) DEFAULT NULL,
+user_id INT(11) NOT NULL,
 PRIMARY KEY (id),
 KEY position (position),
 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
@@ -51,27 +51,6 @@ FOREIGN KEY (speciality_id) REFERENCES speciality (id) ON DELETE SET NULL,
 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-CREATE TABLE slot_schedule (
-id INT(11) NOT NULL AUTO_INCREMENT, 
-slot_start TIME NOT NULL,
-slot_end TIME NOT NULL,
-patient_id INT(11) DEFAULT NULL,
-PRIMARY KEY (id),
-FOREIGN KEY (patient_id) REFERENCES patient (id) ON DELETE SET NULL
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
-
-CREATE TABLE date_schedule (
-id INT(11) NOT NULL AUTO_INCREMENT,
-date DATE NOT NULL,
-slot_id INT(11) NOT NULL,
-doctor_id INT(11) NOT NULL,
-PRIMARY KEY (id),
-KEY date (date),
-FOREIGN KEY (slot_id) REFERENCES slot_schedule (id) ON DELETE CASCADE,
-FOREIGN KEY (doctor_id) REFERENCES doctor (id) ON DELETE CASCADE
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE patient (
 id INT(11) NOT NULL AUTO_INCREMENT,
 email VARCHAR(50) NOT NULL,
@@ -85,8 +64,29 @@ KEY phone (phone),
 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
+CREATE TABLE date_schedule (
+id INT(11) NOT NULL AUTO_INCREMENT,
+date DATE NOT NULL,
+doctor_id INT(11) NOT NULL,
+PRIMARY KEY (id),
+KEY date (date),
+FOREIGN KEY (doctor_id) REFERENCES doctor (id) ON DELETE CASCADE
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE slot_schedule (
+id INT(11) NOT NULL AUTO_INCREMENT, 
+slot_start TIME NOT NULL,
+slot_end TIME NOT NULL,
+date_id INT(11) NOT NULL,
+patient_id INT(11) DEFAULT NULL,
+PRIMARY KEY (id),
+FOREIGN KEY (patient_id) REFERENCES patient (id) ON DELETE SET NULL,
+FOREIGN KEY (date_id) REFERENCES date_schedule (id) ON DELETE CASCADE
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
 INSERT INTO user VALUES(NULL,"Иван","Иванов","Иванович","admin","qwerty","admin");
+INSERT INTO user VALUES(NULL,"Василий","Васильев","Васильевич","fwefwefw","qwerty","doctor");
 INSERT INTO admin VALUES(NULL,"superadmin", (SELECT id FROM user WHERE login = "admin"));
 
-/*SELECT * FROM user;*/
-/*SELECT * FROM admin;*/
+SELECT * FROM user;
+SELECT * FROM admin;

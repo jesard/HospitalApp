@@ -2,30 +2,17 @@ package net.thumbtack.school.hospital.model;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 public class DaySchedule {
 
     private LocalDate date;
-    // REVU идея не очень хорошая. Получается, что в этом классе одно поле для доктора, а другое для пациента
-    // так делать не надо
-    // варианты правильного решения
-    // 1. Просто свой класс для доктора и свой для пациента
-    // 2. abstract class AbstractDaySchedule и от него DoctorDaySchedule и PatientDaySchedule
-    // 3. Нужен ли для пациента Map - вопрос спорный. Из идейных соображений тут, конечно Map
-    // но число элементов в нем настолько мало, что вполне можно и List с полным перебором - это никак медленее не будет
-    // да и вообще, подумайте - а нужно ли такое пациенту. Это же DaySchedule. У врача есть дневное расписание, а пациенту оно зачем ?
-    private List<Slot> slotSchedule; //for Doctor
-    private Map<Doctor, Slot> ticketSchedule; //for Patient
+    private List<Slot> slotSchedule;
+    private Doctor doctor;
 
     public DaySchedule(LocalDate date, List<Slot> detailedSchedule) {
         this.date = date;
         this.slotSchedule = detailedSchedule;
-    }
-
-    public DaySchedule(LocalDate date, Map<Doctor, Slot> ticketSchedule) {
-        this.date = date;
-        this.ticketSchedule = ticketSchedule;
     }
 
     public LocalDate getDate() {
@@ -44,4 +31,26 @@ public class DaySchedule {
         this.slotSchedule = slotSchedule;
     }
 
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DaySchedule)) return false;
+        DaySchedule that = (DaySchedule) o;
+        return Objects.equals(getDate(), that.getDate()) &&
+                Objects.equals(getSlotSchedule(), that.getSlotSchedule()) &&
+                Objects.equals(getDoctor(), that.getDoctor());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDate(), getSlotSchedule(), getDoctor());
+    }
 }

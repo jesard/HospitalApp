@@ -1,4 +1,4 @@
 package net.thumbtack.school.hospital.dao;
 
-public class DoctorDao {
+public interface DoctorDao extends UserDao {
 }
