@@ -12,7 +12,7 @@ public class AdminDaoImpl extends UserDaoImpl implements AdminDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminDaoImpl.class);
 
     @Override
-    public void insertAdmin(Admin admin) {
+    public Admin insertAdmin(Admin admin) {
         LOGGER.debug("DAO insert Admin {}", admin);
         insertUser(admin, "admin");
         try (SqlSession sqlSession = getSession()) {
@@ -25,6 +25,7 @@ public class AdminDaoImpl extends UserDaoImpl implements AdminDao {
             }
             sqlSession.commit();
         }
+        return admin;
     }
 
     @Override

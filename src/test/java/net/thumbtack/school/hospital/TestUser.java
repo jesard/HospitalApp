@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 public class TestUser {
@@ -42,12 +43,14 @@ public class TestUser {
     public void testUserInsert() {
         User user1 = new User("Ivan", "Ivanov", "ivan322", "qwerty");
         userDao.insertUser(user1, "admin");
+        assertEquals(user1, userDao.getUser(user1.getLogin()));
     }
 
     @Test
     public void testAdminInsert() {
-        Admin admin = new Admin("Ivan", "Ivanov", "ivan322", "qwerty", "junior admin");
-        adminDao.insertAdmin(admin);
+        Admin admin1 = new Admin("Ivan", "Ivanov", "ivan322", "qwerty", "junior admin");
+        adminDao.insertAdmin(admin1);
+        assertEquals(admin1, adminDao.getAdmin(admin1.getLogin()));
     }
 
     @Test
@@ -55,6 +58,7 @@ public class TestUser {
         User user1 = new User("Ivan", "Ivanov", "ivan322", "qwerty");
         userDao.insertUser(user1, "admin");
         userDao.deleteUser(user1);
+        assertNull(userDao.getUser(user1.getLogin()));
     }
 
     @Test

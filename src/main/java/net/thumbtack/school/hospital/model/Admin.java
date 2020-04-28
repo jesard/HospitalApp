@@ -25,11 +25,11 @@ public class Admin extends User {
         this.position = position;
     }
 
-    public int getUserId() {
+    public int getId() {
         return id;
     }
 
-    public void setUserId(int userId) {
+    public void setId(int userId) {
         this.id = userId;
     }
 
