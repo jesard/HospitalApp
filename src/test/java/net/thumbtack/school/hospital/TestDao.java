@@ -3,7 +3,7 @@ package net.thumbtack.school.hospital;
 import net.thumbtack.school.hospital.dao.AdminDao;
 import net.thumbtack.school.hospital.dao.UserDao;
 import net.thumbtack.school.hospital.daoimpl.AdminDaoImpl;
-import net.thumbtack.school.hospital.daoimpl.DebugDao;
+import net.thumbtack.school.hospital.debug.DebugDaoImpl;
 import net.thumbtack.school.hospital.daoimpl.UserDaoImpl;
 import net.thumbtack.school.hospital.database.mybatis.utils.MyBatisUtils;
 import net.thumbtack.school.hospital.model.Admin;
@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 
-public class TestUser {
+public class TestDao {
 
     protected UserDao userDao = new UserDaoImpl();
-    protected DebugDao debugDao = new DebugDao();
+    protected DebugDaoImpl debugDao = new DebugDaoImpl();
     protected AdminDao adminDao = new AdminDaoImpl();
     private static boolean setUpIsDone = false;
 

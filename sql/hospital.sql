@@ -85,7 +85,6 @@ FOREIGN KEY (date_id) REFERENCES date_schedule (id) ON DELETE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 INSERT INTO user VALUES(NULL,"Иван","Иванов","Иванович","admin","qwerty","admin");
-INSERT INTO user VALUES(NULL,"Василий","Васильев","Васильевич","fwefwefw","qwerty","doctor");
 INSERT INTO admin VALUES(NULL,"superadmin", (SELECT id FROM user WHERE login = "admin"));
 
 SELECT * FROM user;
