@@ -1,4 +1,6 @@
+// REVU net.thumbtack.school.hospital.service;
 package net.thumbtack.school.hospital.Service;
+
 
 import com.google.gson.Gson;
 import net.thumbtack.school.hospital.dao.AdminDao;
@@ -8,10 +10,11 @@ import net.thumbtack.school.hospital.dto.response.RegisterAdminDtoResponse;
 import net.thumbtack.school.hospital.model.Admin;
 
 public class AdminService {
-
+	// REVU DAO не надо static
     private static AdminDao adminDao = new AdminDaoImpl();
     private static Gson gson = new Gson();
 
+    // REVU не надо static.
     public static String registerAdmin(String registerAdminJson) {
         RegisterAdminDtoRequest registerAdminDtoRequest = gson.fromJson(registerAdminJson, RegisterAdminDtoRequest.class);
         String firstName = registerAdminDtoRequest.getFirstName();

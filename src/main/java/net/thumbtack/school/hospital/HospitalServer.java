@@ -10,10 +10,12 @@ public class HospitalServer {
 
     //private AdminService adminService = new AdminService();
 
-    public static String insertAdmin(String requestJsonString) {
+    // REVU это здесь зачем ? метод должен вызываться из REST - контроллера - это не Задание 11
+	public static String insertAdmin(String requestJsonString) {
         return AdminService.registerAdmin(requestJsonString);
     }
 
+	//  REVU то же
     public static String login(String requestJsonString) {
         return null;
     }
