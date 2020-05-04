@@ -12,12 +12,12 @@ public class UserDaoImpl extends DaoImplBase implements UserDao {
 
     @Override
     public void insertUser(User user, String descriptor) {
-        LOGGER.debug("DAO insert User {}", user);
+        LOGGER.debug("DAO insert User {}", user.getLogin());
         try (SqlSession sqlSession = getSession()) {
             try {
                 getUserMapper(sqlSession).insert(user, descriptor);
             } catch (RuntimeException ex) {
-                LOGGER.info("Can't insert User {} {}", user, ex);
+                LOGGER.info("Can't insert User {} {}", user.getLogin(), ex);
                 sqlSession.rollback();
                 throw ex;
             }

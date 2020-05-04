@@ -11,7 +11,7 @@ public class Patient extends User {
     private String email;
     private String address;
     private String phone;
-    private List<DaySchedule> tickets = new ArrayList<>();
+    private List<Slot> tickets = new ArrayList<>();
 
     public Patient(String firstName, String lastName, String login, String password, String email, String address, String phone) {
         super(firstName, lastName, login, password);
@@ -19,6 +19,8 @@ public class Patient extends User {
         this.address = address;
         this.phone = phone;
     }
+
+    public Patient() {}
 
     public String getEmail() {
         return email;
@@ -44,21 +46,19 @@ public class Patient extends User {
         this.phone = phone;
     }
 
-    @Override
-    public int getUserId() {
+    public int getId() {
         return id;
     }
 
-    @Override
-    public void setUserId(int userId) {
-        this.id = userId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public List<DaySchedule> getTickets() {
+    public List<Slot> getTickets() {
         return tickets;
     }
 
-    public void setTickets(List<DaySchedule> tickets) {
+    public void setTickets(List<Slot> tickets) {
         this.tickets = tickets;
     }
 

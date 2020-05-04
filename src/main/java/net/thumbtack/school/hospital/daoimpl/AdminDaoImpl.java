@@ -29,7 +29,7 @@ public class AdminDaoImpl extends UserDaoImpl implements AdminDao {
     }
 
     @Override
-    public Admin getAdmin(String login) {
+    public Admin getAdminByLogin(String login) {
         LOGGER.debug("DAO get Admin with login: {}", login);
         User user = getUser(login);
         try (SqlSession sqlSession = getSession()) {
@@ -44,17 +44,8 @@ public class AdminDaoImpl extends UserDaoImpl implements AdminDao {
     }
 
     @Override
-    public void addSession(String token, User user) {
-
-    }
-
-    @Override
-    public User getSession(String token) {
+    public Admin getAdminById(int id) {
         return null;
     }
 
-    @Override
-    public void removeSession(String token) {
-
-    }
 }

@@ -78,6 +78,7 @@ id INT(11) NOT NULL AUTO_INCREMENT,
 slot_start TIME NOT NULL,
 slot_end TIME NOT NULL,
 date_id INT(11) NOT NULL,
+ticket_number VARCHAR(50) DEFAULT NULL,
 patient_id INT(11) DEFAULT NULL,
 PRIMARY KEY (id),
 FOREIGN KEY (patient_id) REFERENCES patient (id) ON DELETE SET NULL,
@@ -86,6 +87,14 @@ FOREIGN KEY (date_id) REFERENCES date_schedule (id) ON DELETE CASCADE
 
 INSERT INTO user VALUES(NULL,"Иван","Иванов","Иванович","admin","qwerty","admin");
 INSERT INTO admin VALUES(NULL,"superadmin", (SELECT id FROM user WHERE login = "admin"));
+INSERT INTO speciality VALUES(NULL, "therapist");
+INSERT INTO room VALUES(NULL, "302a");
+INSERT INTO room VALUES(NULL, "555a");
 
 SELECT * FROM user;
 SELECT * FROM admin;
+SELECT * FROM speciality;
+SELECT * FROM room;
+SELECT * FROM doctor;
+SELECT * FROM date_schedule;
+SELECT * FROM slot_schedule;

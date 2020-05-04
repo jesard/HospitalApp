@@ -6,5 +6,7 @@ public interface AdminDao extends UserDao {
 
     Admin insertAdmin(Admin admin);
 
-    Admin getAdmin(String login);
+    Admin getAdminByLogin(String login);
+
+    Admin getAdminById(int id);
 }

@@ -17,6 +17,10 @@ public class Admin extends User {
         this.position = position;
     }
 
+    public Admin() {
+
+    }
+
     public String getPosition() {
         return position;
     }

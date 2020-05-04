@@ -5,14 +5,19 @@ import java.util.Objects;
 
 public class Slot {
 
+    private int id;
     private LocalTime timeStart;
     private LocalTime timeEnd;
     private DaySchedule daySchedule;
+    private String ticketNumber;
     private Patient patient;
 
     public Slot(LocalTime timeStart, LocalTime timeEnd) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
+    }
+
+    public Slot() {
     }
 
     public LocalTime getTimeStart() {
@@ -45,6 +50,22 @@ public class Slot {
 
     public void setDaySchedule(DaySchedule daySchedule) {
         this.daySchedule = daySchedule;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTicketNumber() {
+        return ticketNumber;
+    }
+
+    public void setTicketNumber(String ticketNumber) {
+        this.ticketNumber = ticketNumber;
     }
 
     @Override

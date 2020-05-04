@@ -6,13 +6,17 @@ import java.util.Objects;
 
 public class DaySchedule {
 
+    private int id;
     private LocalDate date;
     private List<Slot> slotSchedule;
     private Doctor doctor;
 
-    public DaySchedule(LocalDate date, List<Slot> detailedSchedule) {
+    public DaySchedule(LocalDate date, List<Slot> slotSchedule) {
         this.date = date;
-        this.slotSchedule = detailedSchedule;
+        this.slotSchedule = slotSchedule;
+    }
+
+    public DaySchedule() {
     }
 
     public LocalDate getDate() {
@@ -37,6 +41,14 @@ public class DaySchedule {
 
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

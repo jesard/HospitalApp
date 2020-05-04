@@ -5,27 +5,37 @@ package net.thumbtack.school.hospital.Service;
 import com.google.gson.Gson;
 import net.thumbtack.school.hospital.dao.AdminDao;
 import net.thumbtack.school.hospital.daoimpl.AdminDaoImpl;
-import net.thumbtack.school.hospital.dto.request.RegisterAdminDtoRequest;
-import net.thumbtack.school.hospital.dto.response.RegisterAdminDtoResponse;
+import net.thumbtack.school.hospital.dto.request.RegAdminDtoRequest;
+import net.thumbtack.school.hospital.dto.response.RegPatientDtoResponse;
+import net.thumbtack.school.hospital.dto.response.RegAdminDtoResponse;
 import net.thumbtack.school.hospital.model.Admin;
+import net.thumbtack.school.hospital.model.Patient;
 
 public class AdminService {
-	// REVU DAO не надо static
-    private static AdminDao adminDao = new AdminDaoImpl();
-    private static Gson gson = new Gson();
+    private AdminDao adminDao = new AdminDaoImpl();
+    private Gson gson = new Gson();
 
-    // REVU не надо static.
-    public static String registerAdmin(String registerAdminJson) {
-        RegisterAdminDtoRequest registerAdminDtoRequest = gson.fromJson(registerAdminJson, RegisterAdminDtoRequest.class);
-        String firstName = registerAdminDtoRequest.getFirstName();
-        String lastName = registerAdminDtoRequest.getLastName();
-        String patronymic = registerAdminDtoRequest.getPatronymic();
-        String position = registerAdminDtoRequest.getPosition();
-        String login = registerAdminDtoRequest.getLogin();
-        String password = registerAdminDtoRequest.getPassword();
-        Admin admin = new Admin(firstName, lastName, login, password, position);
-        admin.setPatronymic(patronymic);
-        return gson.toJson(new RegisterAdminDtoResponse(adminDao.insertAdmin(admin)));
+    private Admin makeAdminFromDtoRequest(RegAdminDtoRequest request) {
+        Admin admin = new Admin();
+        UserService.makeUserFromDtoRequest(admin, request);
+        admin.setPosition(request.getPosition());
+        return admin;
+    }
+
+    private RegAdminDtoResponse makeDtoResponseFromAdmin(Admin admin) {
+        RegAdminDtoResponse response = new RegAdminDtoResponse();
+        UserService.makeDtoResponseFromUser(response, admin);
+        response.setId(admin.getId());
+        response.setPosition(admin.getPosition());
+        return response;
+    }
+
+    public String registerAdmin(String registerAdminJson) {
+        RegAdminDtoRequest regAdminDtoRequest = gson.fromJson(registerAdminJson, RegAdminDtoRequest.class);
+        Admin admin = makeAdminFromDtoRequest(regAdminDtoRequest);
+        adminDao.insertAdmin(admin);
+        RegAdminDtoResponse response = makeDtoResponseFromAdmin(admin);
+        return gson.toJson(response);
     }
 }
 

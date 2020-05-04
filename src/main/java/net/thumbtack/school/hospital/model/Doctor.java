@@ -18,6 +18,14 @@ public class Doctor extends User {
         this.room = room;
     }
 
+    public Doctor(User user, String speciality, String room) {
+        super(user.getFirstName(), user.getLastName(), user.getLogin(), user.getPassword());
+        this.speciality = speciality;
+        this.room = room;
+    }
+
+    public Doctor() {}
+
     public String getSpeciality() {
         return speciality;
     }
@@ -42,13 +50,11 @@ public class Doctor extends User {
         this.schedule = schedule;
     }
 
-    @Override
-    public int getUserId() {
+    public int getId() {
         return id;
     }
 
-    @Override
-    public void setUserId(int userId) {
+    public void setId(int userId) {
         this.id = userId;
     }
 

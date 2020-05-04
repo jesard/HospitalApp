@@ -1,24 +1,15 @@
 package net.thumbtack.school.hospital.dto.request;
 
-public class RegisterAdminDtoRequest {
+public class RegUserDtoRequest {
 
     private String firstName;
     private String lastName;
     private String patronymic;
-    private String position;
     private String login;
     private String password;
 
-    public RegisterAdminDtoRequest(String firstName, String lastName, String patronymic, String position, String login, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.patronymic = patronymic;
-        this.position = position;
-        this.login = login;
-        this.password = password;
-    }
+    public RegUserDtoRequest() {
 
-    public RegisterAdminDtoRequest() {
     }
 
     public String getFirstName() {
@@ -45,14 +36,6 @@ public class RegisterAdminDtoRequest {
         this.patronymic = patronymic;
     }
 
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
     public String getLogin() {
         return login;
     }
@@ -67,5 +50,15 @@ public class RegisterAdminDtoRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public RegUserDtoRequest(String firstName, String lastName, String patronymic, String login, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.patronymic = patronymic;
+        this.login = login;
+        this.password = password;
+
+
     }
 }

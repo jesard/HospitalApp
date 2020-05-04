@@ -12,6 +12,9 @@ public interface UserMapper {
     @Select("SELECT id as userId, firstName, lastName, login, password FROM user WHERE login = #{login}")
     User get(String login);
 
+    @Select("SELECT id as userId, firstName, lastName, login, password FROM user WHERE id = #{userId}")
+    User getById(int userId);
+
     @Delete("DELETE FROM user WHERE (login <> 'admin')")
     void deleteAll();
 
