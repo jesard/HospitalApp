@@ -34,8 +34,13 @@ public class AdminDaoImpl extends UserDaoImpl implements AdminDao {
         User user = getUser(login);
         try (SqlSession sqlSession = getSession()) {
             try {
-                String position = getAdminMapper(sqlSession).getPosition(user.getUserId());
-                return new Admin(user, position);
+                Admin admin = getAdminMapper(sqlSession).getAdminByUserId(user.getUserId());
+                admin.setFirstName(user.getFirstName());
+                admin.setLastName(user.getLastName());
+                admin.setPatronymic(user.getPatronymic());
+                admin.setLogin(user.getLogin());
+                admin.setPassword(user.getPassword());
+                return admin;
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't get Admin with login {}: {}", login, ex);
                 throw ex;
@@ -44,8 +49,39 @@ public class AdminDaoImpl extends UserDaoImpl implements AdminDao {
     }
 
     @Override
-    public Admin getAdminById(int id) {
-        return null;
+    public Admin getAdminByUserId(int userId) {
+        LOGGER.debug("DAO get Admin with id: {}", userId);
+        User user = getUserById(userId);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                Admin admin = getAdminMapper(sqlSession).getAdminByUserId(userId);
+                admin.setFirstName(user.getFirstName());
+                admin.setLastName(user.getLastName());
+                admin.setPatronymic(user.getPatronymic());
+                admin.setLogin(user.getLogin());
+                admin.setPassword(user.getPassword());
+                return admin;
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't get Admin with id {}: {}", userId, ex);
+                throw ex;
+            }
+        }
+    }
+
+    @Override
+    public void updateAdmin(Admin newAdmin) {
+        LOGGER.debug("DAO update Admin with id = {}", newAdmin.getUserId());
+        updateUser(newAdmin);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getAdminMapper(sqlSession).update(newAdmin);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't update Admin with id = {}", newAdmin.getUserId(), ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
     }
 
 }

@@ -8,13 +8,15 @@ public interface UserDao {
 
     User getUser(String login);
 
+    User getUserById(int id);
+
     void deleteUser(User user);
 
-    void addSession(String token, User user);
+    void updateUser(User newUser);
 
-    User getSession(String token);
+    void login(int userId, String token);
 
-    void removeSession(String token);
+    int getUserIdByToken(String token);
 
-
+    String getDescriptorByUserId(int userId);
 }

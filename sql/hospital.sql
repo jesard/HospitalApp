@@ -17,6 +17,15 @@ KEY patronymic (patronymic),
 UNIQUE KEY login (login)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
+CREATE TABLE session (
+id INT(11) NOT NULL AUTO_INCREMENT,
+user_id INT(11) NOT NULL,
+token VARCHAR(50) NOT NULL,
+PRIMARY KEY (id),
+UNIQUE KEY token (token),
+FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
 CREATE TABLE speciality (
 id INT(11) NOT NULL AUTO_INCREMENT,
 title VARCHAR(50) NOT NULL,
@@ -91,10 +100,13 @@ INSERT INTO speciality VALUES(NULL, "therapist");
 INSERT INTO room VALUES(NULL, "302a");
 INSERT INTO room VALUES(NULL, "555a");
 
-SELECT * FROM user;
+/*SELECT * FROM user;
+SELECT * FROM session;
 SELECT * FROM admin;
 SELECT * FROM speciality;
 SELECT * FROM room;
 SELECT * FROM doctor;
+SELECT * FROM patient;
 SELECT * FROM date_schedule;
-SELECT * FROM slot_schedule;
+SELECT * FROM slot_schedule;*/
+

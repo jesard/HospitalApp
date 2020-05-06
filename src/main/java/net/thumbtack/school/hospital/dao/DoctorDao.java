@@ -13,4 +13,8 @@ public interface DoctorDao extends UserDao {
     Doctor insertDoctorWithSchedule(Doctor doctor);
 
     Doctor getDoctorByLogin(String login);
+
+    Doctor getDoctorByUserId(int id);
+
+    Doctor getDoctorWithoutScheduleByDoctorId(int doctorId);
 }

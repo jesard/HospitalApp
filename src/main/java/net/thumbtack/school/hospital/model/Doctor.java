@@ -59,6 +59,15 @@ public class Doctor extends User {
     }
 
     @Override
+    public String toString() {
+        return "Doctor{" +
+                "id=" + id +
+                ", speciality='" + speciality + '\'' +
+                ", room='" + room + '\'' +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Doctor)) return false;

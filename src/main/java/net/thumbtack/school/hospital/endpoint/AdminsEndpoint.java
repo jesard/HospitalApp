@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-public class AdminEndpoint {
+public class AdminsEndpoint {
 
     AdminService adminService = new AdminService();
 
-    @PostMapping("/admin")
+    @PostMapping("/admins")
     public String insertAdmin(@RequestBody String requestJsonString) {
         return adminService.registerAdmin(requestJsonString);
     }

@@ -8,5 +8,7 @@ public interface AdminDao extends UserDao {
 
     Admin getAdminByLogin(String login);
 
-    Admin getAdminById(int id);
+    Admin getAdminByUserId(int id);
+
+    void updateAdmin(Admin newAdmin);
 }

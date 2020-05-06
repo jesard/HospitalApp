@@ -1,5 +1,6 @@
 package net.thumbtack.school.hospital.endpoint;
 
+import net.thumbtack.school.hospital.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,11 +14,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
-public class SessionEndpoint {
+public class SessionsEndpoint {
+
+    UserService userService = new UserService();
 
     @PostMapping("/sessions")
     public ResponseEntity<String> login(@RequestBody String requestLoginJson, HttpServletResponse response) {
-        Cookie cookie = new Cookie("JAVASESSIONID", UUID.randomUUID().toString());
+        String token = userService.login(requestLoginJson);
+        Cookie cookie = new Cookie("JAVASESSIONID", token);
         response.addCookie(cookie);
         return new ResponseEntity<>(HttpStatus.OK);
     }

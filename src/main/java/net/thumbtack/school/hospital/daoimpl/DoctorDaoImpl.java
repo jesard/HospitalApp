@@ -103,4 +103,46 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
             }
         }
     }
+
+    @Override
+    public Doctor getDoctorByUserId(int userId) {
+        LOGGER.debug("DAO get Doctor with id: {}", userId);
+        User user = getUserById(userId);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                Doctor doctor = getDoctorMapper(sqlSession).getDoctorByUserId(userId);
+                doctor.setFirstName(user.getFirstName());
+                doctor.setLastName(user.getLastName());
+                doctor.setPatronymic(user.getPatronymic());
+                doctor.setLogin(user.getLogin());
+                doctor.setPassword(user.getPassword());
+                return doctor;
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't get Doctor with id {}: {}", userId, ex);
+                throw ex;
+            }
+        }
+    }
+
+    @Override
+    public Doctor getDoctorWithoutScheduleByDoctorId(int doctorId) {
+        LOGGER.debug("DAO get Doctor with doctorId: {}", doctorId);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                Doctor doctor = getDoctorMapper(sqlSession).getDoctorWithoutScheduleByDoctorId(doctorId);
+                User user = getUserById(doctor.getUserId());
+                doctor.setFirstName(user.getFirstName());
+                doctor.setLastName(user.getLastName());
+                doctor.setLogin(user.getLogin());
+                doctor.setPassword(user.getPassword());
+                return doctor;
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't Doctor with doctorId: {} - {}", doctorId, ex);
+                throw ex;
+            }
+        }
+    }
+
+
 }
+

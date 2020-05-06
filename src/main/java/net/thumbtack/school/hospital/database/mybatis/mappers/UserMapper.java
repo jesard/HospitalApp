@@ -9,10 +9,10 @@ public interface UserMapper {
     @Options(useGeneratedKeys = true, keyProperty = "user.userId")
     void insert(@Param("user") User user, @Param("descriptor") String descriptor);
 
-    @Select("SELECT id as userId, firstName, lastName, login, password FROM user WHERE login = #{login}")
+    @Select("SELECT id as userId, firstName, patronymic, lastName, login, password FROM user WHERE login = #{login}")
     User get(String login);
 
-    @Select("SELECT id as userId, firstName, lastName, login, password FROM user WHERE id = #{userId}")
+    @Select("SELECT id as userId, firstName, patronymic, lastName, login, password FROM user WHERE id = #{userId}")
     User getById(int userId);
 
     @Delete("DELETE FROM user WHERE (login <> 'admin')")
@@ -20,4 +20,19 @@ public interface UserMapper {
 
     @Delete("DELETE FROM user WHERE id = #{userId}")
     void delete(User user);
+
+    @Update("UPDATE user SET firstName = #{firstName}, lastName = #{lastName}, patronymic = #{patronymic}, password = #{password} WHERE id = #{userId}")
+    void update(User newUser);
+
+    @Insert("INSERT INTO session (user_id, token) VALUES (#{userId}, #{token})")
+    void login(@Param("userId") int userId, @Param("token") String token);
+
+    @Delete("DELETE FROM session WHERE token = #{token}")
+    void logout(String token);
+
+    @Select("SELECT user_id FROM session WHERE token = #{token}")
+    int getUserIdByToken(String token);
+
+    @Select("SELECT descriptor FROM user WHERE id = #{userId}")
+    String getDescriptorByUserId(int userId);
 }

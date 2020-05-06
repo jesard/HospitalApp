@@ -1,12 +1,13 @@
 package net.thumbtack.school.hospital.daoimpl;
 
 import net.thumbtack.school.hospital.dao.ScheduleDao;
-import net.thumbtack.school.hospital.model.DaySchedule;
-import net.thumbtack.school.hospital.model.Doctor;
-import net.thumbtack.school.hospital.model.Slot;
+import net.thumbtack.school.hospital.model.*;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 
 public class ScheduleDaoImpl extends DaoImplBase implements ScheduleDao {
@@ -46,6 +47,19 @@ public class ScheduleDaoImpl extends DaoImplBase implements ScheduleDao {
             sqlSession.commit();
         }
         return slot;
+    }
+
+    @Override
+    public int getSlotIdForAppointment(int doctorId, LocalDate date, LocalTime time) {
+        LOGGER.debug("DAO get Slot id for appointment: doctor id {}, {} {}", doctorId, date, time);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                return getScheduleMapper(sqlSession).getSlotIdByDateTime(doctorId, date, time);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't get Slot id for appointment:  doctor id {} {} {} - {}", doctorId, date, time, ex);
+                throw ex;
+            }
+        }
     }
 
 

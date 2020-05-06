@@ -1,8 +1,5 @@
 package net.thumbtack.school.hospital.Service;
 
-import com.google.gson.Gson;
-import net.thumbtack.school.hospital.dao.DoctorDao;
-import net.thumbtack.school.hospital.daoimpl.DoctorDaoImpl;
 import net.thumbtack.school.hospital.dto.request.regDoctor.RegDocDtoRequestByHands;
 import net.thumbtack.school.hospital.dto.request.regDoctor.WeekDaysSchedule;
 import net.thumbtack.school.hospital.dto.request.regDoctor.WeekSchedule;
@@ -21,12 +18,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class DoctorService {
+public class DoctorService extends UserService {
 
-    DoctorDao doctorDao = new DoctorDaoImpl();
-    Gson gson = new Gson();
-
-    private DayOfWeek getDayOfWeek(String day) {
+    private static DayOfWeek getDayOfWeek(String day) {
         switch (day) {
             case "Mon": return DayOfWeek.MONDAY;
             case "Tue": return DayOfWeek.TUESDAY;
@@ -37,7 +31,7 @@ public class DoctorService {
         return null;
     }
 
-    private DaySchedule makeDaySchedule(Doctor doctor, LocalDate date, LocalTime timeStart, LocalTime timeEnd, int duration) {
+    private static DaySchedule makeDaySchedule(Doctor doctor, LocalDate date, LocalTime timeStart, LocalTime timeEnd, int duration) {
         DaySchedule daySchedule = new DaySchedule();
         daySchedule.setDoctor(doctor);
         daySchedule.setDate(date);
@@ -52,7 +46,7 @@ public class DoctorService {
         return daySchedule;
     }
 
-    private Doctor makeDoctorFromDtoRequest(RegDocDtoRequestByHands request) {
+    protected static Doctor makeDoctorFromDtoRequest(RegDocDtoRequestByHands request) {
         Doctor doctor = new Doctor();
         doctor.setFirstName(request.getFirstName());
         doctor.setLastName(request.getLastName());
@@ -111,7 +105,7 @@ public class DoctorService {
         return doctor;
     }
 
-    private RegDoctorDtoResponse makeDtoResponseFromDoctor(Doctor doctor) {
+    protected static RegDoctorDtoResponse makeDtoResponseFromDoctor(Doctor doctor) {
         RegDoctorDtoResponse response = new RegDoctorDtoResponse();
         response.setId(doctor.getId());
         response.setFirstName(doctor.getFirstName());
@@ -132,7 +126,7 @@ public class DoctorService {
             dayResponse.setSlots(slotsForResponse);
             schedule.add(dayResponse);
         }
-        response.setDayScheduleDtoResponse(schedule);
+        response.setSchedule(schedule);
         return response;
     }
 

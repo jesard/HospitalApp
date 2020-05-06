@@ -99,6 +99,7 @@ public class TestDao {
         Doctor doctor1 = new Doctor("John", "Vatson", "rgerg43", "qwerty", "therapist", "302a");
         doctorDao.insertDoctor(doctor1);
         Doctor doctor2 = doctorDao.getDoctorByLogin(doctor1.getLogin());
+        assertEquals(doctor1, doctor2);
     }
 
 
@@ -130,7 +131,8 @@ public class TestDao {
         scheduleDao.insert(daySchedule2, slot3);
         scheduleDao.insert(daySchedule2, slot4);
 
-        System.out.println(doctor1);
+        Doctor doctorFromDb = doctorDao.getDoctorByLogin(doctor1.getLogin());
+        assertEquals(doctor1.getLastName(), doctorFromDb.getLastName());
     }
 
     @Test
@@ -154,6 +156,9 @@ public class TestDao {
         doctor1.setSchedule(dayScheduleList);
 
         doctorDao.insertDoctorWithSchedule(doctor1);
+
+        Doctor doctorFromDb = doctorDao.getDoctorByLogin(doctor1.getLogin());
+        assertEquals(doctor1.getLastName(), doctorFromDb.getLastName());
     }
 
 

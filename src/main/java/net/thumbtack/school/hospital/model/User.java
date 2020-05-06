@@ -23,6 +23,11 @@ public class User {
         this.userId = id;
     }
 
+    public User(int userId, String firstName, String lastName, String patronymic, String login, String password) {
+        this(userId, firstName, lastName, login, password);
+        this.patronymic = patronymic;
+    }
+
     public User() {}
 
     public String getFirstName() {

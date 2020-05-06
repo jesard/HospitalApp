@@ -10,6 +10,8 @@ public class UserDaoImpl extends DaoImplBase implements UserDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
 
+
+
     @Override
     public void insertUser(User user, String descriptor) {
         LOGGER.debug("DAO insert User {}", user.getLogin());
@@ -39,6 +41,19 @@ public class UserDaoImpl extends DaoImplBase implements UserDao {
     }
 
     @Override
+    public User getUserById(int id) {
+        LOGGER.debug("DAO get User with id: {}", id);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                return getUserMapper(sqlSession).getById(id);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't delete User with login {}: {}", id, ex);
+                throw ex;
+            }
+        }
+    }
+
+    @Override
     public void deleteUser(User user) {
         LOGGER.debug("DAO delete User {} ", user);
         try (SqlSession sqlSession = getSession()) {
@@ -53,19 +68,62 @@ public class UserDaoImpl extends DaoImplBase implements UserDao {
         }
     }
 
-
     @Override
-    public void addSession(String token, User user) {
-
+    public void updateUser(User newUser) {
+        LOGGER.debug("DAO update User with id {}", newUser.getUserId());
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getUserMapper(sqlSession).update(newUser);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't update User with id {}", newUser.getUserId());
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
     }
 
     @Override
-    public User getSession(String token) {
-        return null;
+    public void login(int userId, String token) {
+        LOGGER.debug("DAO login User with id {}", userId);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getUserMapper(sqlSession).login(userId, token);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't login User with id {} - {}", userId, ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
     }
 
     @Override
-    public void removeSession(String token) {
-
+    public int getUserIdByToken(String token) {
+        LOGGER.debug("DAO get UserId with token: {}", token);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                return getUserMapper(sqlSession).getUserIdByToken(token);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't get UserId with token {} - {}", token, ex);
+                throw ex;
+            }
+        }
     }
+
+    @Override
+    public String getDescriptorByUserId(int userId) {
+        LOGGER.debug("DAO get Descriptor By User Id: {}", userId);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                return getUserMapper(sqlSession).getDescriptorByUserId(userId);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't get Descriptor By User Id: {} - {}", userId, ex);
+                throw ex;
+            }
+        }
+    }
+
+
+
 }

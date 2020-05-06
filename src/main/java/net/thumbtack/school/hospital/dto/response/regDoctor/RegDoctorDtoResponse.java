@@ -1,17 +1,16 @@
 package net.thumbtack.school.hospital.dto.response.regDoctor;
 
+import net.thumbtack.school.hospital.dto.response.RegUserDtoResponse;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class RegDoctorDtoResponse {
+public class RegDoctorDtoResponse extends RegUserDtoResponse {
 
     private int id;
-    private String firstName;
-    private String lastName;
-    private String patronymic;
     private String speciality;
     private String room;
-    List<DayScheduleDtoResponse> dayScheduleDtoResponse = new ArrayList<>();
+    List<DayScheduleDtoResponse> schedule = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -19,30 +18,6 @@ public class RegDoctorDtoResponse {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
     }
 
     public String getSpeciality() {
@@ -61,11 +36,11 @@ public class RegDoctorDtoResponse {
         this.room = room;
     }
 
-    public List<DayScheduleDtoResponse> getDayScheduleDtoResponse() {
-        return dayScheduleDtoResponse;
+    public List<DayScheduleDtoResponse> getSchedule() {
+        return schedule;
     }
 
-    public void setDayScheduleDtoResponse(List<DayScheduleDtoResponse> dayScheduleDtoResponse) {
-        this.dayScheduleDtoResponse = dayScheduleDtoResponse;
+    public void setSchedule(List<DayScheduleDtoResponse> schedule) {
+        this.schedule = schedule;
     }
 }
