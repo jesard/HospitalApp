@@ -1,3 +1,4 @@
+// REVU никаких заглавных букв в имени пакета 
 package net.thumbtack.school.hospital.Service;
 
 import net.thumbtack.school.hospital.dto.request.regDoctor.RegDocDtoRequestByHands;
@@ -106,6 +107,8 @@ public class DoctorService extends UserService {
     }
 
     protected static RegDoctorDtoResponse makeDtoResponseFromDoctor(Doctor doctor) {
+    	// REVU сделайте конструктор RegDoctorDtoResponse с параметрами и вызовите его
+    	// сеттеры не для заполнения полей, а для изменения
         RegDoctorDtoResponse response = new RegDoctorDtoResponse();
         response.setId(doctor.getId());
         response.setFirstName(doctor.getFirstName());

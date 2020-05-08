@@ -47,6 +47,8 @@ public class TestService {
     }
 
     private String insertDoctor1() {
+    	// REVU не надо вручную создавать json
+    	// работайте с DTO, заполняйте и получайте
         String regDocJson1 = "{" +
                 "\"firstName\": \"John\"," +
                 " \"lastName\": \"Watson\"," +

@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class HospitalServer {
 
     public static void main(final String[] args) {
+    	// REVU прикрутите логгер
         System.out.println("Start application");
         SpringApplication.run(HospitalServer.class);
     }

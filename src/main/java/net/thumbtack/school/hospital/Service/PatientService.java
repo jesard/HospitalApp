@@ -1,5 +1,6 @@
 package net.thumbtack.school.hospital.Service;
 
+// REVU уберите. Gson не нужен в этом проекте
 import com.google.gson.Gson;
 import com.google.gson.internal.$Gson$Preconditions;
 import net.thumbtack.school.hospital.dao.PatientDao;

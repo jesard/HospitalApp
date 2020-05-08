@@ -16,9 +16,13 @@ import java.util.UUID;
 @RequestMapping("/api")
 public class SessionsEndpoint {
 
+	// REVU private
     UserService userService = new UserService();
 
     @PostMapping("/sessions")
+    // REVU просто передайте методу LoginDtoRequest, а не String
+    // контроллер сам его сделает
+    // в других методах аналогично
     public ResponseEntity<String> login(@RequestBody String requestLoginJson, HttpServletResponse response) {
         String token = userService.login(requestLoginJson);
         Cookie cookie = new Cookie("JAVASESSIONID", token);

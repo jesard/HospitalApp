@@ -23,11 +23,15 @@ public class AdminService extends UserService {
         return response;
     }
 
+    // REVU просто передайте методу RegAdminDtoRequest, а не String
+    // контроллер сам его сделает
+    // в других методах аналогично
     public String registerAdmin(String registerAdminJson) {
         RegAdminDtoRequest regAdminDtoRequest = gson.fromJson(registerAdminJson, RegAdminDtoRequest.class);
         Admin admin = makeAdminFromDtoRequest(regAdminDtoRequest);
         adminDao.insertAdmin(admin);
         RegAdminDtoResponse response = makeDtoResponseFromAdmin(admin);
+        // REVU и возвращайте RegAdminDtoResponse. Контроллер сам его сериализует в json 
         return gson.toJson(response);
     }
 

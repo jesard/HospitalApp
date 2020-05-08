@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+// REVU переименуйте. Это не тест
 public class HttpGetTest {
 
     @GetMapping("/test")

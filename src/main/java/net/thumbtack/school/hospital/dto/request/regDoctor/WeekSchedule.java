@@ -6,6 +6,7 @@ import java.util.List;
 public class WeekSchedule {
     private String timeStart;
     private String timeEnd;
+    // REVU private
     List<String> weekDays = new ArrayList<>();
 
     public String getTimeStart() {

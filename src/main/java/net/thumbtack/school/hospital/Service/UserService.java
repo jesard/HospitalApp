@@ -1,5 +1,8 @@
 package net.thumbtack.school.hospital.Service;
 
+// REVU не надо использовать com.google.gson.Gson
+// в Spring обычно используется jackson, но, как правило, вообще не надо вручную сериализовать и десериализовать
+// см. REVU к методу login
 import com.google.gson.Gson;
 import net.thumbtack.school.hospital.dao.AdminDao;
 import net.thumbtack.school.hospital.dao.DoctorDao;
@@ -34,6 +37,11 @@ public class UserService {
     protected DoctorDao doctorDao = new DoctorDaoImpl();
     protected PatientDao patientDao = new PatientDaoImpl();
 
+    // REVU лучше User makeUserFromDtoRequest(RegUserDtoRequest request) {
+    // и мне не нравится, что этот метод вызыается из других сервисов
+    // лучше вынести его выше, то есть создать класс ServiceBase,
+    // сделать все сервисы его наследниками
+    // а этот метод перенести туда как protected
     public static void makeUserFromDtoRequest(User user, RegUserDtoRequest request) {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -42,12 +50,15 @@ public class UserService {
         user.setPassword(request.getPassword());
     }
 
+    // REVU аналогично
     public static void makeDtoResponseFromUser(RegUserDtoResponse response, User user) {
         response.setFirstName(user.getFirstName());
         response.setLastName(user.getLastName());
         response.setPatronymic(user.getPatronymic());
     }
 
+    // REVU просто передайте методу LoginDtoRequest, а не String
+    // контроллер сам его сделает
     public String login(String loginJson) {
         LoginDtoRequest request = gson.fromJson(loginJson, LoginDtoRequest.class);
         User user = userDao.getUser(request.getLogin());
@@ -56,6 +67,8 @@ public class UserService {
             userDao.login(user.getUserId(), token);
             return token;
         } else {
+        	// REVU создайте свой класс ServerException с ErrorCode и выбрасывайте его
+        	// не надо возвращать таинственные строки
             return "error";
         }
     }
@@ -80,6 +93,8 @@ public class UserService {
                 return gson.toJson(response);
             }
             default:
+            	// REVU А Вы подумали, где будет это исключение ловиться ?
+            	// 
                 throw new IllegalStateException("Unexpected value: " + descriptor);
         }
     }

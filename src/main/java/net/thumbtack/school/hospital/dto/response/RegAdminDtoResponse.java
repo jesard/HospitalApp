@@ -1,5 +1,6 @@
 package net.thumbtack.school.hospital.dto.response;
 
+// REVU DTO не должны знать про классы модели
 import net.thumbtack.school.hospital.model.Admin;
 
 public class RegAdminDtoResponse extends RegUserDtoResponse {

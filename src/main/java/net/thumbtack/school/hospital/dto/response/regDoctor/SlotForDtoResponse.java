@@ -2,6 +2,7 @@ package net.thumbtack.school.hospital.dto.response.regDoctor;
 
 import net.thumbtack.school.hospital.model.Patient;
 
+// REVU просто SlotDtoResponse
 public class SlotForDtoResponse {
     private String time;
     private Patient patient;
