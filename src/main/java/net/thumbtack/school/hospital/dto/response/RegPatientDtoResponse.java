@@ -15,16 +15,18 @@ public class RegPatientDtoResponse extends RegUserDtoResponse {
         this.phone = phone;
     }
 
+    public RegPatientDtoResponse(String firstName, String lastName, String patronymic, String email, String address, String phone) {
+        this(0, firstName, lastName, patronymic, email, address, phone);
+    }
+
+    public RegPatientDtoResponse() { }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public RegPatientDtoResponse() {
-        super();
     }
 
     public String getEmail() {

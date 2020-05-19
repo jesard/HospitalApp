@@ -1,182 +1,197 @@
 package net.thumbtack.school.hospital;
 
-import com.google.gson.Gson;
-import net.thumbtack.school.hospital.Service.AdminService;
-import net.thumbtack.school.hospital.Service.DoctorService;
-import net.thumbtack.school.hospital.Service.PatientService;
-import net.thumbtack.school.hospital.Service.UserService;
-import net.thumbtack.school.hospital.dao.AdminDao;
-import net.thumbtack.school.hospital.daoimpl.AdminDaoImpl;
-import net.thumbtack.school.hospital.database.mybatis.utils.MyBatisUtils;
-import net.thumbtack.school.hospital.debug.DebugDaoImpl;
-import net.thumbtack.school.hospital.dto.response.regDoctor.RegDoctorDtoResponse;
+import net.thumbtack.school.hospital.dto.request.*;
+import net.thumbtack.school.hospital.dto.request.regdoctor.RegDocDtoRequest;
+import net.thumbtack.school.hospital.dto.request.regdoctor.WeekSchedule;
+import net.thumbtack.school.hospital.dto.response.*;
+import net.thumbtack.school.hospital.dto.response.regdoctor.RegDoctorDtoResponse;
+import net.thumbtack.school.hospital.error.ServerException;
 import net.thumbtack.school.hospital.model.Doctor;
-import net.thumbtack.school.hospital.model.User;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import net.thumbtack.school.hospital.service.AdminService;
+import net.thumbtack.school.hospital.service.DoctorService;
+import net.thumbtack.school.hospital.service.PatientService;
+import net.thumbtack.school.hospital.service.UserService;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-public class TestService {
+public class TestService extends TestBase {
 
-    Gson gson = new Gson();
     private AdminService adminService = new AdminService();
     private DoctorService doctorService = new DoctorService();
     private PatientService patientService = new PatientService();
     private UserService userService = new UserService();
-    protected DebugDaoImpl debugDao = new DebugDaoImpl();
-    protected static boolean setUpIsDone = false;
 
-    @BeforeAll()
-    public static void setUp() {
-        if (!setUpIsDone) {
-            boolean initSqlSessionFactory = MyBatisUtils.initSqlSessionFactory();
-            if (!initSqlSessionFactory) {
-                throw new RuntimeException("Can't create connection, stop");
-            }
-            setUpIsDone = true;
-        }
+
+    //TODO Mock Dao
+
+    private RegDoctorDtoResponse insertDoctor1(String token) throws ServerException {
+
+        RegDocDtoRequest regDocRequest = new RegDocDtoRequest("Геннадий", "Ветров", "Васильевич", "mekerrer", "wefmwefwlekf", "surgeon", "555a", "05-06-2020", "05-07-2020", 15);
+        List<String> weekDays = new ArrayList<>();
+        weekDays.add("Mon");
+        weekDays.add("Tue");
+        WeekSchedule weekSchedule = new WeekSchedule("09:00", "15:00", weekDays);
+        regDocRequest.setWeekSchedule(weekSchedule);
+
+        return doctorService.registerDoctor(regDocRequest, token);
     }
 
-    @BeforeEach()
-    public void clearDatabase() {
-        debugDao.deleteAllUsers();
+    private RegDoctorDtoResponse insertDoctor2(String token) throws ServerException {
+        RegDocDtoRequest regDocRequest = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-07-2020", "05-08-2020", 15);
+        List<String> weekDays = new ArrayList<>();
+        weekDays.add("Mon");
+        WeekSchedule weekSchedule = new WeekSchedule("14:00", "17:00", weekDays);
+        regDocRequest.setWeekSchedule(weekSchedule);
+
+        return doctorService.registerDoctor(regDocRequest, token);
     }
 
-    private String insertDoctor1() {
-    	// REVU не надо вручную создавать json
-    	// работайте с DTO, заполняйте и получайте
-        String regDocJson1 = "{" +
-                "\"firstName\": \"John\"," +
-                " \"lastName\": \"Watson\"," +
-                " \"patronymic\": \"отчество\"," +
-                "\"speciality\":\"therapist\"," +
-                "\"room\":\"555a\"," +
-                "\"login\":\"login443\"," +
-                "\"password\":\"qwerty\"," +
-                "\"dateStart\":\"05-05-2020\"," +
-                "\"dateEnd\":\"05-07-2020\"," +
-                "\"weekSchedule\":" +
-                "{" +
-                "\"timeStart\" :\"09:00\"," +
-                "\"timeEnd\":\"15:00\"," +
-                "\"weekDays\":[]" +
-                "}," +
-                "\"weekDaysSchedule\":[]," +
-                "\"duration\": 15}";
-        return doctorService.registerDoctor(regDocJson1);
+    private RegPatientDtoResponse insertPatientByService1() {
+        RegPatientDtoRequest regPatientDtoRequest = new RegPatientDtoRequest("Василий","Мураев", "Иванович", "efef@wefwe.ru", "frfrferf", "489348", "faffasf", "fefefefefefef");
+        return patientService.registerPatient(regPatientDtoRequest);
     }
 
-    private String insertDoctor2() {
-        String regDocJson2 = "{" +
-                "\"firstName\": \"John\"," +
-                "\"lastName\": \"Watson\"," +
-                "\"patronymic\": \"отчество\"," +
-                "\"speciality\":\"therapist\"," +
-                "\"room\":\"555a\"," +
-                "\"login\":\"login444\"," +
-                "\"password\":\"qwerty\"," +
-                "\"dateStart\":\"08-05-2020\"," +
-                "\"dateEnd\":\"05-06-2020\"," +
-                "\"weekSchedule\":" +
-                "{}," +
-                "\"weekDaysSchedule\" : [{\"weekDay\":\"Mon\",\"timeStart\":\"08:00\",\"timeEnd\":\"10:00\"}, {\"weekDay\":\"Tue\",\"timeStart\":\"14:00\",\"timeEnd\":\"16:00\"}]," +
-                "\"duration\": 15}";
-        return doctorService.registerDoctor(regDocJson2);
-    }
-
-    private String insertPatient1() {
-        String regPatientJson1 = "{\"firstName\": \"имя\"," +
-                "    \"lastName\": \"фамилия\"," +
-                "    \"patronymic\": \"отчество\"," +
-                "    \"email\": \"адрес\"," +
-                "    \"address\": \"домашний адрес, одной строкой\"," +
-                "    \"phone\": \"номер\"," +
-                "    \"login\": \"логин\"," +
-                "    \"password\": \"пароль\"}";
-        return patientService.registerPatient(regPatientJson1);
+    private RegPatientDtoResponse insertPatientByService2() {
+        RegPatientDtoRequest regPatientDtoRequest = new RegPatientDtoRequest("Евгений","Карузо", "Петрович", "fmdko@wefwe.ru", "ививаи", "56456456", "kkkkiiky", "rfgergergwq");
+        return patientService.registerPatient(regPatientDtoRequest);
     }
 
     @Test
-    public void testAdminRegister() {
-        String regAdminJson1 = "{\"firstName\": \"имяAdmin\"," +
-                "    \"lastName\": \"фамилия\"," +
-                "    \"patronymic\": \"отчество\"," +
-                "    \"position\": \"должность\"," +
-                "    \"login\": \"логин\"," +
-                "    \"password\": \"пароль\"}";
+    public void testAdminRegister() throws ServerException {
+        LoginDtoRequest loginDtoRequest = new LoginDtoRequest("admin", "qwerty");
+        String adminToken = userService.login(loginDtoRequest);
 
-        String response = adminService.registerAdmin(regAdminJson1);
-        assertTrue(response.contains("имяAdmin"));
+        RegAdminDtoRequest regAdminDtoRequest = new RegAdminDtoRequest("имяАдмин", "фамилия", "отчество", "должность", "aaaaa", "qwerty");
+
+        RegAdminDtoResponse response = adminService.registerAdmin(regAdminDtoRequest, adminToken);
+        assertEquals(response.getFirstName(), "имяАдмин");
     }
 
     @Test
-    public void testDoctorRegister() {
+    public void testDoctorsRegister() throws ServerException {
 
-        String response1 = insertDoctor1();
-        String response2 = insertDoctor2();
-        assertTrue(response1.contains("09:00"));
-        assertTrue(response2.contains("08:00"));
+        LoginDtoRequest loginAdmin = new LoginDtoRequest("admin", "qwerty");
+        String tokenAdmin = userService.login(loginAdmin);
 
+        RegDoctorDtoResponse response = insertDoctor2(tokenAdmin);
+        assertEquals(response.getFirstName(), "Марат");
     }
 
     @Test
     public void testPatientRegister() {
-        String response = insertPatient1();
-        assertTrue(response.contains("фамилия"));
+        RegPatientDtoResponse response = insertPatientByService1();
+        assertEquals(response.getFirstName(), "Василий");
     }
 
     @Test
-    public void testMakeAppointment() {
+    public void testMakeAppointment() throws ServerException {
 
-        String response1 = insertDoctor1();
-        String response3 = insertPatient1();
+        LoginDtoRequest loginAdmin = new LoginDtoRequest("admin", "qwerty");
+        String tokenAdmin = userService.login(loginAdmin);
+        RegDoctorDtoResponse response1 = insertDoctor1(tokenAdmin);
+        RegPatientDtoResponse response3 = insertPatientByService1();
 
-        int docId1 = gson.fromJson(response1, RegDoctorDtoResponse.class).getId();
+        int docId1 = response1.getId();
 
+        LoginDtoRequest loginDtoRequest = new LoginDtoRequest("faffasf", "fefefefefefef");
+        String token = userService.login(loginDtoRequest);
 
-        String loginJson = "{\"login\": \"логин\"," +
-                "\"password\": \"пароль\"}";
-        String token = userService.login(loginJson);
+        MakeAppointmentDtoRequest makeAppointmentDtoRequest = new MakeAppointmentDtoRequest(docId1, "", "08-06-2020","09:00");
 
-        String makeAppointmentJson = "{\"doctorId\":" + docId1 + "," +
-                "\"speciality\":\"\"," +
-                "\"date\":\"05-05-2020\"," +
-                "\"time\":\"09:00\"}";
+        MakeAppointmentDtoResponse response = patientService.makeAppointment(makeAppointmentDtoRequest, token);
 
-        String response = patientService.makeAppointment(makeAppointmentJson, token);
-        assertTrue(response.contains("\"ticket\":\"D"));
+        assertTrue(response.getTicket().contains("08062020"));
+
     }
 
     @Test
-    public void testGetDoctorByToken() {
-        insertDoctor2();
-
-        String loginJson = "{\"login\": \"login444\"," +
-                "\"password\": \"qwerty\"}";
-
-        String token1 = userService.login(loginJson);
-        String response = userService.getUserByToken(token1);
-        assertTrue(response.contains("daySchedule"));
-        assertTrue(response.contains("Watson"));
+    public Doctor testGetDoctorByDoctorId(int doctorId) {
+        return null;
     }
 
     @Test
-    public void testGetPatientByToken() {
-        insertPatient1();
-
-        String loginJson = "{\"login\": \"логин\"," +
-                "\"password\": \"пароль\"}";
-
-        String token1 = userService.login(loginJson);
-        String response = userService.getUserByToken(token1);
-
-        assertTrue(response.contains("адрес"));
-        assertTrue(response.contains("номер"));
+    public void testGetDoctorByToken() throws ServerException {
+        LoginDtoRequest loginAdmin = new LoginDtoRequest("admin", "qwerty");
+        String tokenAdmin = userService.login(loginAdmin);
+        RegDoctorDtoResponse response1 = insertDoctor1(tokenAdmin);
+        LoginDtoRequest loginDtoRequest = new LoginDtoRequest("mekerrer", "wefmwefwlekf");
+        String token1 = userService.login(loginDtoRequest);
+        RegUserDtoResponse response = userService.getUserDtoResponseByToken(token1);
+        assertTrue(response.getLastName().contains("Ветров"));
     }
+
+    @Test
+    public void testGetDoctor() throws ServerException {
+        LoginDtoRequest loginAdmin = new LoginDtoRequest("admin", "qwerty");
+        String tokenAdmin = userService.login(loginAdmin);
+        RegDoctorDtoResponse response1 = insertDoctor1(tokenAdmin);
+        RegPatientDtoResponse response3 = insertPatientByService1();
+        RegPatientDtoResponse response4 = insertPatientByService2();
+
+        int docId1 = response1.getId();
+
+        LoginDtoRequest loginDtoRequest = new LoginDtoRequest("faffasf", "fefefefefefef");
+        String tokenPatient1 = userService.login(loginDtoRequest);
+        LoginDtoRequest loginDtoRequest2= new LoginDtoRequest("kkkkiiky", "rfgergergwq");
+        String tokenPatient2 = userService.login(loginDtoRequest2);
+
+
+        MakeAppointmentDtoRequest makeAppointmentDtoRequest = new MakeAppointmentDtoRequest(docId1, "", "08-06-2020","09:00");
+        patientService.makeAppointment(makeAppointmentDtoRequest, tokenPatient1);
+
+        RegDoctorDtoResponse response = doctorService.getDoctor(docId1, "yes", null, null, tokenPatient1);
+        assertEquals("Мураев", response.getSchedule().get(0).getDaySchedule().get(0).getPatient().getLastName());
+    }
+
+    @Test
+    public void testGetPatientByToken() throws ServerException {
+        insertPatientByService1();
+
+        LoginDtoRequest loginDtoRequest = new LoginDtoRequest("faffasf", "fefefefefefef");
+
+        String token1 = userService.login(loginDtoRequest);
+        RegPatientDtoResponse response = (RegPatientDtoResponse) userService.getUserDtoResponseByToken(token1);
+
+//        assertTrue(response.g.contains("адрес"));
+//        assertTrue(response.contains("номер"));
+    }
+
+    //TODO test for busy room
+
+//    @Test
+//    public void testRegisterCommission() throws ServerException {
+//        LoginDtoRequest loginAdmin = new LoginDtoRequest("admin", "qwerty");
+//        String tokenAdmin = userService.login(loginAdmin);
+//
+//        RegDoctorDtoResponse response1 = insertDoctor1(tokenAdmin);
+//        RegDoctorDtoResponse response2 = insertDoctor2(tokenAdmin);
+//
+//        List<Integer> docIds = new ArrayList<>();
+//        docIds.add(1);
+//        docIds.add(2);
+//        RegCommissionDtoRequest request = new RegCommissionDtoRequest(1, docIds, "302a", "08-06-2020", "10:00", 30);
+//        LoginDtoRequest loginDtoRequest = new LoginDtoRequest("eregergwww", "vdfvffvdfv");
+//        String token = userService.login(loginDtoRequest);
+//        doctorService.registerCommission(request, token);
+//    }
+//
+//    @Test
+//    public void testGetPatientTickets() throws ServerException {
+////        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+////        LocalDate date = LocalDate.parse("272-02-2020", formatterDate);
+//        LoginDtoRequest loginDtoRequest = new LoginDtoRequest("faffasf", "fefefefefefef");
+//        String token = userService.login(loginDtoRequest);
+//        GetTicketsDtoResponse f = patientService.getTickets(token);
+//        System.out.println();
+//    }
+
+
 
 }
 

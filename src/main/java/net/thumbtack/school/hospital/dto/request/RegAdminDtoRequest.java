@@ -1,7 +1,10 @@
 package net.thumbtack.school.hospital.dto.request;
 
+import javax.validation.constraints.NotEmpty;
+
 public class RegAdminDtoRequest extends RegUserDtoRequest {
 
+    @NotEmpty
     private String position;
 
     public RegAdminDtoRequest(String firstName, String lastName, String patronymic, String position, String login, String password) {

@@ -10,6 +10,8 @@ public class LoginDtoRequest {
         this.password = password;
     }
 
+    public LoginDtoRequest() {}
+
     public String getLogin() {
         return login;
     }

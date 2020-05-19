@@ -1,30 +1,43 @@
 package net.thumbtack.school.hospital.model;
 
+import net.thumbtack.school.hospital.validation.Login;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 public class User {
 
+
     private int userId;
+
+    @NotEmpty
     private String firstName;
+
+    @NotEmpty
     private String lastName;
     private String patronymic;
+
+    @Login
     private String login;
     private String password;
 
-    public User(String firstName, String lastName, String login, String password) {
+
+
+    public User(String firstName, String lastName, String patronymic, String login, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.patronymic = patronymic;
         this.login = login;
         this.password = password;
     }
 
-    public User(int id, String firstName, String lastName, String login, String password) {
-        this(firstName, lastName, login, password);
-        this.userId = id;
-    }
+
 
     public User(int userId, String firstName, String lastName, String patronymic, String login, String password) {
-        this(userId, firstName, lastName, login, password);
+        this(firstName, lastName, patronymic, login, password);
+        this.userId = userId;
         this.patronymic = patronymic;
     }
 
@@ -76,6 +89,16 @@ public class User {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", patronymic='" + patronymic + '\'' +
+                '}';
     }
 
     @Override

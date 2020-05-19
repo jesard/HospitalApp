@@ -35,12 +35,8 @@ public class DaoImplBase {
         return sqlSession.getMapper(DoctorMapper.class);
     }
 
-    protected PatientMapper getPatientMapper(SqlSession sqlSession) {
-        return sqlSession.getMapper(PatientMapper.class);
-    }
+    protected PatientMapper getPatientMapper(SqlSession sqlSession) { return sqlSession.getMapper(PatientMapper.class); }
 
-    protected ScheduleMapper getScheduleMapper(SqlSession sqlSession) {
-        return sqlSession.getMapper(ScheduleMapper.class);
-    }
+    protected ScheduleMapper getScheduleMapper(SqlSession sqlSession) { return sqlSession.getMapper(ScheduleMapper.class); }
 
 }

@@ -69,6 +69,15 @@ public class Slot {
     }
 
     @Override
+    public String toString() {
+        return "Slot{" +
+                "id=" + id +
+                ", timeStart=" + timeStart +
+                ", timeEnd=" + timeEnd +
+                ", date=" + daySchedule.getDate() + "}";
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Slot)) return false;

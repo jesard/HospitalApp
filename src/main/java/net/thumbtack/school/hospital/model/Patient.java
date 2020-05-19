@@ -12,9 +12,10 @@ public class Patient extends User {
     private String address;
     private String phone;
     private List<Slot> tickets = new ArrayList<>();
+    private List<Slot> commissions = new ArrayList<>();
 
-    public Patient(String firstName, String lastName, String login, String password, String email, String address, String phone) {
-        super(firstName, lastName, login, password);
+    public Patient(String firstName, String lastName, String patronymic, String login, String password, String email, String address, String phone) {
+        super(firstName, lastName, patronymic, login, password);
         this.email = email;
         this.address = address;
         this.phone = phone;
@@ -60,6 +61,14 @@ public class Patient extends User {
 
     public void setTickets(List<Slot> tickets) {
         this.tickets = tickets;
+    }
+
+    public List<Slot> getCommissions() {
+        return commissions;
+    }
+
+    public void setCommissions(List<Slot> commissions) {
+        this.commissions = commissions;
     }
 
     @Override

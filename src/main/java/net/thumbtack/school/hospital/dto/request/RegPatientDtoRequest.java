@@ -1,9 +1,19 @@
 package net.thumbtack.school.hospital.dto.request;
 
+import net.thumbtack.school.hospital.validation.MobilePhone;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
 public class RegPatientDtoRequest extends RegUserDtoRequest {
 
+    @Email
     private String email;
+
+    @NotEmpty
     private String address;
+
+    @MobilePhone
     private String phone;
 
     public RegPatientDtoRequest(String firstName, String lastName, String patronymic, String email, String address, String phone, String login, String password) {
@@ -12,6 +22,8 @@ public class RegPatientDtoRequest extends RegUserDtoRequest {
         this.address = address;
         this.phone = phone;
     }
+
+    public RegPatientDtoRequest() {super();}
 
 
     public String getEmail() {

@@ -1,5 +1,6 @@
 package net.thumbtack.school.hospital.model;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,15 +12,10 @@ public class Doctor extends User {
     private String speciality;
     private String room;
     private List<DaySchedule> schedule = new ArrayList<>();
+//    private List<DayOfWeekSchedule> weekSchedule = new ArrayList<>();
 
-    public Doctor(String firstName, String lastName, String login, String password, String speciality, String room) {
-        super(firstName, lastName, login, password);
-        this.speciality = speciality;
-        this.room = room;
-    }
-
-    public Doctor(User user, String speciality, String room) {
-        super(user.getFirstName(), user.getLastName(), user.getLogin(), user.getPassword());
+    public Doctor(String firstName, String lastName, String patronymic, String login, String password, String speciality, String room) {
+        super(firstName, lastName, patronymic, login, password);
         this.speciality = speciality;
         this.room = room;
     }
@@ -57,6 +53,14 @@ public class Doctor extends User {
     public void setId(int userId) {
         this.id = userId;
     }
+
+//    public List<DayOfWeekSchedule> getWeekSchedule() {
+//        return weekSchedule;
+//    }
+//
+//    public void setWeekSchedule(List<DayOfWeekSchedule> weekSchedule) {
+//        this.weekSchedule = weekSchedule;
+//    }
 
     @Override
     public String toString() {

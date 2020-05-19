@@ -1,7 +1,9 @@
 package net.thumbtack.school.hospital.endpoint;
 
-import net.thumbtack.school.hospital.Service.AdminService;
-import net.thumbtack.school.hospital.Service.UserService;
+import net.thumbtack.school.hospital.dto.response.RegUserDtoResponse;
+import net.thumbtack.school.hospital.error.ServerException;
+import net.thumbtack.school.hospital.service.UserService;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,11 +11,10 @@ import org.springframework.web.bind.annotation.*;
 public class AccountEndpoint {
 
     UserService userService = new UserService();
-    AdminService adminService = new AdminService();
 
-    @GetMapping("/account")
-    public String getUser(@CookieValue(value = "JAVASESSIONID", defaultValue = "") String token) {
-        return userService.getUserByToken(token);
+    @GetMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
+    public RegUserDtoResponse getUser(@CookieValue(value = "JAVASESSIONID", defaultValue = "") String token) throws ServerException {
+        return userService.getUserDtoResponseByToken(token);
     }
 
 

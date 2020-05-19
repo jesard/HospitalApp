@@ -52,6 +52,15 @@ public class DaySchedule {
     }
 
     @Override
+    public String toString() {
+        return "DaySchedule{" +
+                "id=" + id +
+                ", date=" + date +
+                ", doctor=" + doctor.getLastName() +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof DaySchedule)) return false;

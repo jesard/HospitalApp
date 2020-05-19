@@ -1,10 +1,19 @@
 package net.thumbtack.school.hospital.dto.request;
 
+import net.thumbtack.school.hospital.validation.Date;
+import net.thumbtack.school.hospital.validation.OneDoctor;
+import net.thumbtack.school.hospital.validation.Time;
+
+@OneDoctor
 public class MakeAppointmentDtoRequest {
 
     private int doctorId;
     private String speciality;
+
+    @Date
     private String date;
+
+    @Time
     private String time;
 
     public MakeAppointmentDtoRequest(int doctorId, String speciality, String date, String time) {

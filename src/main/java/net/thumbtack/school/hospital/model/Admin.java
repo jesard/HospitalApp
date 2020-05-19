@@ -7,15 +7,17 @@ public class Admin extends User {
     private int id;
     private String position;
 
-    public Admin(String firstName, String lastName, String login, String password, String position) {
-        super(firstName, lastName, login, password);
+    public Admin(int adminId, String firstName, String lastName, String patronymic, String login, String password, String position) {
+        super(firstName, lastName, patronymic, login, password);
+        id = adminId;
         this.position = position;
     }
 
-    public Admin(User user, String position) {
-        super(user.getFirstName(), user.getLastName(), user.getLogin(), user.getPassword());
-        this.position = position;
+    public Admin(String firstName, String lastName, String patronymic, String login, String password, String position) {
+        this(0, firstName, lastName, patronymic, login, password, position);
     }
+
+
 
     public Admin() {
 
@@ -36,6 +38,8 @@ public class Admin extends User {
     public void setId(int userId) {
         this.id = userId;
     }
+
+
 
     @Override
     public boolean equals(Object o) {

@@ -1,5 +1,6 @@
 package net.thumbtack.school.hospital.dao;
 
+import net.thumbtack.school.hospital.error.ServerException;
 import net.thumbtack.school.hospital.model.User;
 
 public interface UserDao {
@@ -16,7 +17,9 @@ public interface UserDao {
 
     void login(int userId, String token);
 
-    int getUserIdByToken(String token);
+    int getUserIdByToken(String token) throws ServerException;
 
     String getDescriptorByUserId(int userId);
+
+    void logout(String token);
 }

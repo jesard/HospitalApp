@@ -12,6 +12,7 @@ public class RegUserDtoResponse {
         this.patronymic = patronymic;
     }
 
+
     public RegUserDtoResponse() {
 
     }

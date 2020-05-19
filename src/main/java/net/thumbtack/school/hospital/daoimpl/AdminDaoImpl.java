@@ -28,25 +28,25 @@ public class AdminDaoImpl extends UserDaoImpl implements AdminDao {
         return admin;
     }
 
-    @Override
-    public Admin getAdminByLogin(String login) {
-        LOGGER.debug("DAO get Admin with login: {}", login);
-        User user = getUser(login);
-        try (SqlSession sqlSession = getSession()) {
-            try {
-                Admin admin = getAdminMapper(sqlSession).getAdminByUserId(user.getUserId());
-                admin.setFirstName(user.getFirstName());
-                admin.setLastName(user.getLastName());
-                admin.setPatronymic(user.getPatronymic());
-                admin.setLogin(user.getLogin());
-                admin.setPassword(user.getPassword());
-                return admin;
-            } catch (RuntimeException ex) {
-                LOGGER.info("Can't get Admin with login {}: {}", login, ex);
-                throw ex;
-            }
-        }
-    }
+//    @Override
+//    public Admin getAdminByLogin(String login) {
+//        LOGGER.debug("DAO get Admin with login: {}", login);
+//        User user = getUser(login);
+//        try (SqlSession sqlSession = getSession()) {
+//            try {
+//                Admin admin = getAdminMapper(sqlSession).getAdminByUserId(user.getUserId());
+//                admin.setFirstName(user.getFirstName());
+//                admin.setLastName(user.getLastName());
+//                admin.setPatronymic(user.getPatronymic());
+//                admin.setLogin(user.getLogin());
+//                admin.setPassword(user.getPassword());
+//                return admin;
+//            } catch (RuntimeException ex) {
+//                LOGGER.info("Can't get Admin with login {}: {}", login, ex);
+//                throw ex;
+//            }
+//        }
+//    }
 
     @Override
     public Admin getAdminByUserId(int userId) {

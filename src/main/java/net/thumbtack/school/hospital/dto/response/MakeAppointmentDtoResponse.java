@@ -1,19 +1,18 @@
 package net.thumbtack.school.hospital.dto.response;
 
-public class MakeAppointmentDtoResponse {
+import net.thumbtack.school.hospital.dto.response.regdoctor.RegDoctorDtoResponse;
+
+public class MakeAppointmentDtoResponse extends RegDoctorDtoResponse {
 
     private String ticket;
-    private int doctorId;
-    private String firstName;
-    private String lastName;
-    private String patronymic;
-    private String speciality;
-    private String room;
     private String date;
     private String time;
 
-    public MakeAppointmentDtoResponse() {
-
+    public MakeAppointmentDtoResponse(String ticket, int doctorId, String firstName, String lastName, String patronymic, String speciality, String room, String date, String time) {
+        super(doctorId, firstName, lastName, patronymic, speciality, room);
+        this.ticket = ticket;
+        this.date = date;
+        this.time = time;
     }
 
     public String getTicket() {
@@ -22,54 +21,6 @@ public class MakeAppointmentDtoResponse {
 
     public void setTicket(String ticket) {
         this.ticket = ticket;
-    }
-
-    public int getDoctorId() {
-        return doctorId;
-    }
-
-    public void setDoctorId(int doctorId) {
-        this.doctorId = doctorId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public String getSpeciality() {
-        return speciality;
-    }
-
-    public void setSpeciality(String speciality) {
-        this.speciality = speciality;
-    }
-
-    public String getRoom() {
-        return room;
-    }
-
-    public void setRoom(String room) {
-        this.room = room;
     }
 
     public String getDate() {
@@ -88,17 +39,4 @@ public class MakeAppointmentDtoResponse {
         this.time = time;
     }
 
-    public MakeAppointmentDtoResponse(String ticket, int doctorId, String firstName, String lastName, String patronymic, String speciality, String room, String date, String time) {
-        this.ticket = ticket;
-        this.doctorId = doctorId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.patronymic = patronymic;
-        this.speciality = speciality;
-        this.room = room;
-        this.date = date;
-        this.time = time;
-
-
-    }
 }
