@@ -25,21 +25,27 @@ public interface DoctorDao extends UserDao {
 //
 //    List<String> getTicketsByDateTimeRange(int doctorId, LocalDate date, LocalTime timeStart, LocalTime timeEnd);
 
+    int getSlotIdByDateTime(int doctorId, LocalDate date, LocalTime timeStart) throws ServerException;
+
     List<Integer> getSlotIdsByDateTimeRange(int doctorId, LocalDate date, LocalTime timeStart, LocalTime timeEnd);
 
-    String getRoomByCommissionTicket(String ticketNumber);
+    String getRoomByCommissionTicket(String ticketNumber) throws ServerException;
+
+    void setTerminationDate(int doctorId, LocalDate date);
+
+    int deleteDoctorsWithTerminationDate(LocalDate now);
 
     List<Slot> deleteScheduleFromDate(int doctorId, LocalDate startDate);
 
-    Doctor getDoctorByUserId(int id);
+    Doctor getDoctorByUserId(int id) throws ServerException;
 
-    int getUserIdByDoctorId(int doctorId);
+    int getUserIdByDoctorId(int doctorId) throws ServerException;
 
     List<LocalDate> getRoomOccupationDatesByDoctorId(int doctorId, String room) throws ServerException;
 
-    int getDoctorIdByTicketNumber(String ticketNumber);
+    int getDoctorIdByTicketNumber(String ticketNumber) throws ServerException;
 
-    Doctor getDoctorWithoutScheduleByDoctorId(int doctorId);
+    Doctor getDoctorWithoutScheduleByDoctorId(int doctorId) throws ServerException;
 
     List<Integer> getAllDoctorIds();
 
@@ -53,7 +59,7 @@ public interface DoctorDao extends UserDao {
 
     void updateSchedule(int doctorId, String room, List<DaySchedule> oldSchedule, List<DaySchedule> newSchedule) throws ServerException;
 
-    int getDoctorAppointmentsNumber(int doctorId, LocalDate startDate, LocalDate endDate);
+    int getDoctorAppointmentsNumber(int doctorId, LocalDate startDate, LocalDate endDate) throws ServerException;
 
-    int getWorkingMinutesBySchedule(int doctorId, LocalDate startDate, LocalDate endDate);
+    int getWorkingMinutesBySchedule(int doctorId, LocalDate startDate, LocalDate endDate) throws ServerException;
 }

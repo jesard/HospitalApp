@@ -54,13 +54,6 @@ public class Doctor extends User {
         this.id = userId;
     }
 
-//    public List<DayOfWeekSchedule> getWeekSchedule() {
-//        return weekSchedule;
-//    }
-//
-//    public void setWeekSchedule(List<DayOfWeekSchedule> weekSchedule) {
-//        this.weekSchedule = weekSchedule;
-//    }
 
     @Override
     public String toString() {

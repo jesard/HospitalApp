@@ -54,6 +54,7 @@ id INT(11) NOT NULL AUTO_INCREMENT,
 speciality_id INT(11) DEFAULT NULL,
 room_id INT(11) DEFAULT NULL,
 user_id INT(11) NOT NULL,
+termination_date DATE DEFAULT NULL,
 PRIMARY KEY (id),
 FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE SET NULL,
 FOREIGN KEY (speciality_id) REFERENCES speciality (id) ON DELETE SET NULL,
@@ -65,9 +66,9 @@ id INT(11) NOT NULL AUTO_INCREMENT,
 email VARCHAR(50) NOT NULL,
 address VARCHAR(50) NOT NULL,
 phone VARCHAR(50) NOT NULL,
-user_id INT(11) DEFAULT NULL,
+user_id INT(11) NOT NULL,
 PRIMARY KEY (id),
-UNIQUE KEY email (email),
+KEY email (email),
 KEY address (address),
 KEY phone (phone),
 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
@@ -139,7 +140,4 @@ SELECT * FROM doctor;
 SELECT * FROM patient;
 SELECT * FROM date_schedule;
 SELECT * FROM slot_schedule;
-SELECT * FROM commission;
-
-SELECT timediff(slot_end, slot_start) FROM slot_schedule WHERE date_id IN (SELECT id FROM date_schedule WHERE date >= '2020-05-02' AND date <= '2020-05-03' AND doctor_id = 66);
-SELECT (TIME_TO_SEC(time_end) - TIME_TO_SEC(time_start))/60 FROM room_occupation WHERE date >= '2020-05-02' AND date <= '2020-05-03' AND doctor_id = 66;*/
+SELECT * FROM commission;*/

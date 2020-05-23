@@ -16,6 +16,11 @@ import net.thumbtack.school.hospital.dto.response.regdoctor.SlotDtoResponse;
 import net.thumbtack.school.hospital.error.ServerErrorCode;
 import net.thumbtack.school.hospital.error.ServerException;
 import net.thumbtack.school.hospital.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -26,7 +31,9 @@ import java.util.List;
 
 public class DoctorService extends UserService {
 
-    private static DayOfWeek getDayOfWeek(String day) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoctorService.class);
+
+    private DayOfWeek getDayOfWeek(String day) {
         switch (day) {
             case "Mon": return DayOfWeek.MONDAY;
             case "Tue": return DayOfWeek.TUESDAY;
@@ -43,7 +50,7 @@ public class DoctorService extends UserService {
         daySchedule.setDoctor(doctor);
         daySchedule.setDate(date);
         List<Slot> slots = new ArrayList<>();
-        for (LocalTime time = timeStart; time.isBefore(timeEnd); time = time.plusMinutes(duration)) {
+        for (LocalTime time = timeStart; time.plusMinutes(duration).isBefore(timeEnd.plusMinutes(1)); time = time.plusMinutes(duration)) {
             Slot slot = new Slot(time, time.plusMinutes(duration - 1));
             slot.setDaySchedule(daySchedule);
             slots.add(slot);
@@ -58,7 +65,6 @@ public class DoctorService extends UserService {
         LocalDate dateEnd = LocalDate.parse(request.getDateEnd(), formatterDate);
         EnumSet<DayOfWeek> workDays = EnumSet.noneOf(DayOfWeek.class);
         List<DaySchedule> schedule = new ArrayList<>();
-//        List<DayOfWeekSchedule> daysOfWeekSchedule = new ArrayList<>();
         WeekSchedule weekSchedule = request.getWeekSchedule();
         List<WeekDaysSchedule> weekDaysSchedule = request.getWeekDaysSchedules();
 
@@ -69,12 +75,10 @@ public class DoctorService extends UserService {
             LocalTime timeEnd = LocalTime.parse(weekSchedule.getTimeEnd(), formatterTime);
             if (weekSchedule.getWeekDays().size() != 0) {
                 for (String dayOfWeek: weekSchedule.getWeekDays()) {
-//                    daysOfWeekSchedule.add(new DayOfWeekSchedule(getDayOfWeek(dayOfWeek), timeStart, timeEnd));
                     workDays.add(getDayOfWeek(dayOfWeek));
                 }
             } else {
                 for (int i = 1; i < 6; i++) {
-//                    daysOfWeekSchedule.add(new DayOfWeekSchedule(DayOfWeek.of(i), timeStart, timeEnd));
                     workDays.add(DayOfWeek.of(i));
                 }
             }
@@ -89,9 +93,6 @@ public class DoctorService extends UserService {
         if (weekDaysSchedule != null
                 && weekDaysSchedule.size() != 0) {
             for (WeekDaysSchedule day: weekDaysSchedule) {
-                LocalTime timeStart = LocalTime.parse(day.getTimeStart(), formatterTime);
-                LocalTime timeEnd = LocalTime.parse(day.getTimeEnd(), formatterTime);
-//                daysOfWeekSchedule.add(new DayOfWeekSchedule(getDayOfWeek(day.getWeekDay()), timeStart, timeEnd));
                 workDays.add(getDayOfWeek(day.getWeekDay()));
             }
             for (LocalDate date = dateStart; date.isBefore(dateEnd.plusDays(1)); date = date.plusDays(1)) {
@@ -113,7 +114,6 @@ public class DoctorService extends UserService {
         Doctor doctor = new Doctor(request.getFirstName(), request.getLastName(), request.getPatronymic(), request.getLogin(), request.getPassword(), request.getSpeciality(), request.getRoom());
         List<DaySchedule> schedule = makeScheduleFromDtoRequest(request, doctor);
         doctor.setSchedule(schedule);
-//        doctor.setWeekSchedule(daysOfWeekSchedule);
         return doctor;
     }
 
@@ -130,11 +130,11 @@ public class DoctorService extends UserService {
         List<DayScheduleDtoResponse> schedule = new ArrayList<>();
         for (DaySchedule day: doctor.getSchedule()) {
             DayScheduleDtoResponse dayResponse = new DayScheduleDtoResponse();
-            dayResponse.setDate(day.getDate().toString());
+            dayResponse.setDate(day.getDate().format(formatterDate));
             List<SlotDtoResponse> slotsForResponse = new ArrayList<>();
             for (Slot slot: day.getSlotSchedule()) {
                 SlotDtoResponse slotResponse = new SlotDtoResponse();
-                slotResponse.setTime(slot.getTimeStart().toString());
+                slotResponse.setTime(slot.getTimeStart().format(formatterTime));
                 slotsForResponse.add(slotResponse);
             }
             dayResponse.setSlots(slotsForResponse);
@@ -143,14 +143,14 @@ public class DoctorService extends UserService {
         return schedule;
     }
 
-    private List<DayScheduleDtoResponse> makeScheduleResponseFromDoctor(Doctor doctor, LocalDate dateStart, LocalDate dateEnd, int patientId) {
+    private List<DayScheduleDtoResponse> makeScheduleResponseFromDoctor(Doctor doctor, LocalDate dateStart, LocalDate dateEnd, int patientId) throws ServerException {
         List<DayScheduleDtoResponse> schedule = new ArrayList<>();
         for (DaySchedule day: doctor.getSchedule()) {
             LocalDate date = day.getDate();
             if (date.isAfter(dateStart.minusDays(1)) && date.isBefore(dateEnd.plusDays(1))) {
                 DayScheduleDtoResponse dayResponse = new DayScheduleDtoResponse();
                 dayResponse.setDate(day.getDate().toString());
-                List<SlotDtoResponse> slotsForResponse = getSlotsForDate(day, patientId);
+                List<SlotDtoResponse> slotsForResponse = makeSlotsForDate(day, patientId);
                 dayResponse.setSlots(slotsForResponse);
                 schedule.add(dayResponse);
             }
@@ -158,7 +158,7 @@ public class DoctorService extends UserService {
         return schedule;
     }
 
-    private List<SlotDtoResponse> getSlotsForDate(DaySchedule daySchedule, int patientId) {
+    private List<SlotDtoResponse> makeSlotsForDate(DaySchedule daySchedule, int patientId) throws ServerException {
         List<SlotDtoResponse> slotsForResponse = new ArrayList<>();
         if (patientId == 0) {
             for (Slot slot : daySchedule.getSlotSchedule()) {
@@ -193,7 +193,9 @@ public class DoctorService extends UserService {
     }
 
     public RegDoctorDtoResponse registerDoctor(RegDocDtoRequest request, String token) throws ServerException {
+        LOGGER.debug("Service insert doctor {}", request.getLastName());
         if (!getUserDecriptorByToken(token).equals(ADMIN)) {
+            LOGGER.info("Can't insert doctor {} - {}", request.getLastName(), ServerErrorCode.WRONG_USER.getErrorString());
             throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
         }
         Doctor doctor = makeDoctorFromDtoRequest(request);
@@ -204,6 +206,7 @@ public class DoctorService extends UserService {
     }
 
     public RegDoctorDtoResponse getDoctor(int doctorId, String showSchedule, String startDate, String endDate, String token) throws ServerException {
+        LOGGER.debug("Service get doctor with id {}, showSchedule = {}, dates {} {}", doctorId, showSchedule, startDate, endDate);
         int userId = doctorDao.getUserIdByDoctorId(doctorId);
         Doctor doctor;
         RegDoctorDtoResponse response = new RegDoctorDtoResponse();
@@ -237,6 +240,7 @@ public class DoctorService extends UserService {
     }
 
     public List<RegDoctorDtoResponse> getDoctors(String showSchedule, String speciality, String startDate, String endDate, String token) throws ServerException {
+        LOGGER.debug("Service get doctors, speciality = {}, showSchedule = {}, dates {} {}", speciality, showSchedule, startDate, endDate);
         List<RegDoctorDtoResponse> responseList = new ArrayList<>();
         List<Integer> doctorIdsList;
         if (speciality == null) {
@@ -252,6 +256,7 @@ public class DoctorService extends UserService {
     }
 
     public RegDoctorDtoResponse updateDoctorSchedule(RegDocDtoRequest request, int doctorId, String token) throws ServerException {
+        LOGGER.debug("Service update schedule of doctor with id {}", doctorId);
         if (!getUserDecriptorByToken(token).equals(ADMIN)) {
             throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
         }
@@ -277,12 +282,15 @@ public class DoctorService extends UserService {
         return response;
     }
 
-    //TODO how to delete doctor from DB after firing date?
     public EmptyJsonResponse deleteDoctor(DeleteDoctorDtoRequest request, int doctorId, String token) throws ServerException {
+        LOGGER.debug("Service set firing date = {} for doctor with id {} ", request.getDate(), doctorId);
         if (!getUserDecriptorByToken(token).equals(ADMIN)) {
+            LOGGER.info("Can't set firing date = {} for doctor with id {} - {}", request.getDate(), doctorId, ServerErrorCode.WRONG_USER.getErrorString());
             throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
         }
         LocalDate date = LocalDate.parse(request.getDate(), formatterDate);
+
+        doctorDao.setTerminationDate(doctorId, date);
         List<Slot> deletedTickets = doctorDao.deleteScheduleFromDate(doctorId, date);
         for (Slot slot: deletedTickets) {
             String subject = "Ticket " + slot.getTicketNumber() + "at " + slot.getDaySchedule().getDate() + " " + slot.getTimeStart() + " was canceled";
@@ -293,12 +301,27 @@ public class DoctorService extends UserService {
     }
 
     public RegCommissionDtoResponse registerCommission(RegCommissionDtoRequest request, String token) throws ServerException {
+        LOGGER.debug("Service register commission for patient with id {} ", request.getPatientId());
         DayOfWeek dayOfWeek = LocalDate.parse(request.getDate(), formatterDate).getDayOfWeek();
         if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
-            throw new ServerException(new MyError(ServerErrorCode.WRONG_DATE, Field.DATE));
+            LOGGER.info("Can't register commission for patient with id {} - {}", request.getPatientId(), ServerErrorCode.WRONG_DATE.getErrorString());
+            throw new ServerException(new MyError(ServerErrorCode.WRONG_DATE, Field.DATE, request.getDate()));
         }
         if (!getUserDecriptorByToken(token).equals(DOCTOR)) {
+            LOGGER.info("Can't register commission for patient with id {} - {}", request.getPatientId(), ServerErrorCode.WRONG_USER.getErrorString());
             throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
+        }
+        int patientId = request.getPatientId();
+        LocalDate date = LocalDate.parse(request.getDate(), formatterDate);
+        LocalTime timeStart = LocalTime.parse(request.getTime(), formatterTime);
+        LocalTime timeEnd = timeStart.plusMinutes(request.getDuration());
+
+        List<Slot> slots = patientDao.getBusySlotsByPatientIdDate(patientId, date);
+        for (Slot slot: slots) {
+            if (slot.getTimeStart().isBefore(timeEnd.plusMinutes(1)) && slot.getTimeEnd().isAfter(timeStart.minusMinutes(1))) {
+                LOGGER.info("Can't register commission for patient with id {} - {}", patientId, ServerErrorCode.PATIENT_IS_BUSY.getErrorString());
+                throw new ServerException(new MyError(ServerErrorCode.PATIENT_IS_BUSY, Field.DATETIME, request.getDate() + " " +  request.getTime()));
+            }
         }
         Doctor doctorByToken = (Doctor) getUserByToken(token);
         List<Integer> doctorIds = request.getDoctorIds();
@@ -315,12 +338,9 @@ public class DoctorService extends UserService {
             }
         }
         if (!roomIsValid) {
-            throw new ServerException(new MyError(ServerErrorCode.WRONG_ROOM, Field.ROOM));
+            LOGGER.info("Can't register commission for patient with id {} - {}", request.getPatientId(), ServerErrorCode.WRONG_ROOM.getErrorString());
+            throw new ServerException(new MyError(ServerErrorCode.WRONG_ROOM, Field.ROOM, request.getRoom()));
         }
-
-        LocalDate date = LocalDate.parse(request.getDate(), formatterDate);
-        LocalTime timeStart = LocalTime.parse(request.getTime(), formatterTime);
-        LocalTime timeEnd = timeStart.plusMinutes(request.getDuration());
 
         StringBuilder ticketNumber = new StringBuilder("C");
         for (int doctorId: doctorIds) {
@@ -330,9 +350,7 @@ public class DoctorService extends UserService {
 
         for (int doctorId: doctorIds) {
             List<Integer> slotIds = doctorDao.getSlotIdsByDateTimeRange(doctorId, date, timeStart, timeEnd);
-            for (int slotId: slotIds) {
-                patientDao.makeAppointment(request.getPatientId(), slotId, ticketNumber2);
-            }
+            patientDao.makeAppointments(request.getPatientId(), slotIds, ticketNumber2);
         }
         doctorDao.insertCommission(timeStart, timeEnd, request.getRoom(), ticketNumber2, request.getPatientId());
 

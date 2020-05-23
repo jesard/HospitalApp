@@ -32,14 +32,13 @@ public class GlobalControllerExceptionMethod extends ResponseEntityExceptionHand
     public ResponseEntity<Object> handleServerException(
             ServerException ex, WebRequest request) {
 
-        return new ResponseEntity<>(ex.getMyErrors(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getErrors(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(PersistenceException.class)
     public ResponseEntity<Object> handlePersistenceException(
             PersistenceException ex, WebRequest request) throws ServerException {
-        String message = ex.toString();
-        throw new ServerException(new MyError(ServerErrorCode.DATABASE_ERROR, Field.UNKNOWN, message));
+        throw new ServerException(new MyError(ServerErrorCode.DATABASE_ERROR, Field.UNKNOWN));
     }
 
     @Override
@@ -49,11 +48,11 @@ public class GlobalControllerExceptionMethod extends ResponseEntityExceptionHand
         List<MyError> errors = new ArrayList<>();
 
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
-            errors.add(new MyError(fieldError.getCode(), fieldError.getField(), fieldError.getDefaultMessage()));
+            errors.add(new MyError(fieldError.getCode(), fieldError.getField(), fieldError.getDefaultMessage(), fieldError.getRejectedValue().toString()));
         }
 
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(new MyError(error.getCode(), Field.UNKNOWN, error.getDefaultMessage()));
+            errors.add(new MyError(ServerErrorCode.INVALID_JSON, Field.UNKNOWN, error.getDefaultMessage(), ""));
         }
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
@@ -63,6 +62,7 @@ public class GlobalControllerExceptionMethod extends ResponseEntityExceptionHand
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
                                                                   HttpHeaders headers, HttpStatus status,
                                                                   WebRequest request) {
+
         MyError myError = new MyError(ServerErrorCode.INVALID_JSON, Field.UNKNOWN);
         List<MyError> list = new ArrayList<>();
         list.add(myError);
@@ -91,6 +91,5 @@ public class GlobalControllerExceptionMethod extends ResponseEntityExceptionHand
 //        throw new ServerException(new MyError(ServerErrorCode.DATABASE_ERROR, Field.UNKNOWN, message));
 //    }
 
-    //ResponseEntityExceptionHandler
 
 }

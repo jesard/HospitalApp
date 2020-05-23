@@ -34,6 +34,7 @@ public class UserService {
     protected DoctorDao doctorDao = new DoctorDaoImpl();
     protected PatientDao patientDao = new PatientDaoImpl();
 
+
     protected void makeUserFromDtoRequest(User user, RegUserDtoRequest request) {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -43,22 +44,26 @@ public class UserService {
     }
 
     public String login(LoginDtoRequest request) throws ServerException {
-        User user = userDao.getUser(request.getLogin());
+        LOGGER.debug("Service do login for user {}", request.getLogin());
+        User user = userDao.getUserByLogin(request.getLogin());
         if (request.getPassword().equals(user.getPassword())) {
             String token = UUID.randomUUID().toString();
             userDao.login(user.getUserId(), token);
             return token;
         } else {
-        	throw new ServerException(new MyError(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD, Field.PASSWORD));
+            LOGGER.info("Can't login for user {} - {}", request.getLogin(), ServerErrorCode.WRONG_LOGIN_OR_PASSWORD.getErrorString());
+        	throw new ServerException(new MyError(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD, Field.PASSWORD, request.getLogin()));
         }
     }
 
     public EmptyJsonResponse logout(String token) {
+        LOGGER.debug("Service do logout");
         userDao.logout(token);
         return new EmptyJsonResponse();
     }
 
     public RegUserDtoResponse getUserDtoResponseByToken(String token) throws ServerException {
+        LOGGER.debug("Service get UserDtoResponse by token");
         int userId = userDao.getUserIdByToken(token);
         String descriptor = userDao.getDescriptorByUserId(userId);
         switch (descriptor) {
@@ -76,14 +81,13 @@ public class UserService {
                         patient.getFirstName(), patient.getLastName(), patient.getPatronymic(),
                         patient.getEmail(), patient.getAddress(), patient.getPhone());
             }
-            default:
-                // REVU А Вы подумали, где будет это исключение ловиться ?
-                //
-                throw new IllegalStateException("Unexpected value: " + descriptor);
         }
+        LOGGER.info("Can't get UserDtoResponse by token");
+        return null;
     }
 
     public User getUserByToken(String token) throws ServerException {
+        LOGGER.debug("Service get User by token");
         int userId = userDao.getUserIdByToken(token);
         String descriptor = userDao.getDescriptorByUserId(userId);
         switch (descriptor) {
@@ -96,14 +100,13 @@ public class UserService {
             case PATIENT: {
                 return patientDao.getPatientByUserId(userId);
             }
-            default:
-                // REVU А Вы подумали, где будет это исключение ловиться ?
-                //
-                throw new IllegalStateException("Unexpected value: " + descriptor);
         }
+        LOGGER.info("Can't get user by token");
+        return null;
     }
 
-    public RegUserDtoResponse getUserDtoResponseByUserId(int userId) {
+    public RegUserDtoResponse getUserDtoResponseByUserId(int userId) throws ServerException {
+        LOGGER.debug("Service get UserDtoResponse by user id {}", userId);
         String descriptor = userDao.getDescriptorByUserId(userId);
         switch (descriptor) {
             case ADMIN: {
@@ -120,34 +123,36 @@ public class UserService {
                         patient.getFirstName(), patient.getLastName(), patient.getPatronymic(),
                         patient.getEmail(), patient.getAddress(), patient.getPhone());
             }
-            default:
-                // REVU А Вы подумали, где будет это исключение ловиться ?
-                //
-                throw new IllegalStateException("Unexpected value: " + descriptor);
         }
+        LOGGER.info("Can't get UserDtoResponse by user id {}", userId);
+        return null;
     }
 
     public int getUserIdByToken(String token) throws ServerException {
+        LOGGER.debug("Service get User id by token");
         return userDao.getUserIdByToken(token);
     }
 
     public String getUserDecriptorByToken(String token) throws ServerException {
+        LOGGER.debug("Service get decriptor by token");
         int userId = userDao.getUserIdByToken(token);
         return userDao.getDescriptorByUserId(userId);
     }
 
     public EmptyJsonResponse deleteTicket(String ticketNumber, String token) throws ServerException {
+        LOGGER.debug("Service delete ticket {}", ticketNumber);
         User user = getUserByToken(token);
         String descriptor = userDao.getDescriptorByUserId(user.getUserId());
-        String emailAddress = "";
-        String phoneNumber = "";
         if (descriptor.equals(DOCTOR)) {
             int doctorId = ((Doctor) user).getId();
             int doctorIdByTicket = doctorDao.getDoctorIdByTicketNumber(ticketNumber);
             if (doctorId != doctorIdByTicket) {
+                LOGGER.info("Can't delete ticket {} - {}", ticketNumber, ServerErrorCode.WRONG_USER.getErrorString());
                 throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
             }
         }
+        String emailAddress = "";
+        String phoneNumber = "";
         if (descriptor.equals(PATIENT)) {
             Patient patient = (Patient) user;
             for (Slot slot: patient.getTickets()) {
@@ -158,9 +163,11 @@ public class UserService {
                 }
             }
             if (emailAddress.length() == 0) {
+                LOGGER.info("Can't delete ticket {} - {}", ticketNumber, ServerErrorCode.WRONG_USER.getErrorString());
                 throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
             }
         }
+        //descriptor.equals(ADMIN)
         if (emailAddress.length() == 0) {
             int patientId = patientDao.getPatientIdByTicketNumber(ticketNumber);
             int userId = patientDao.getUserIdByPatientId(patientId);

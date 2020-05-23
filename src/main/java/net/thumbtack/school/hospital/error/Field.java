@@ -11,8 +11,10 @@ public enum Field {
     DATETIME("date/time"),
     ROOM("room"),
     SCHEDULE("Schedule"),
-    DOCTORID("doctor id"),
+    DOCTOR_ID("doctor id"),
     SPECIALITY("speciality"),
+    TICKET_NUMBER("ticket number"),
+    PATIENT_ID("patient id"),
     UNKNOWN("");
 
     private String message;

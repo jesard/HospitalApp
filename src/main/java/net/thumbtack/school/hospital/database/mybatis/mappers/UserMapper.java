@@ -10,13 +10,16 @@ public interface UserMapper {
     void insert(@Param("user") User user, @Param("descriptor") String descriptor);
 
     @Select("SELECT id as userId, firstName, patronymic, lastName, login, password FROM user WHERE login = #{login}")
-    User get(String login);
+    User getUser(String login);
 
     @Select("SELECT id as userId, firstName, patronymic, lastName, login, password FROM user WHERE id = #{userId}")
     User getById(int userId);
 
     @Delete("DELETE FROM user WHERE (login <> 'admin')")
-    void deleteAll();
+    void deleteAllUsers();
+
+    @Delete("DELETE FROM session")
+    void deleteAllSessions();
 
     @Delete("DELETE FROM user WHERE id = #{userId}")
     void delete(User user);

@@ -14,7 +14,6 @@ public class SettingsEndpoint {
 
     private SettingsService settingsService = new SettingsService();
 
-    //GET /api/settings
     @GetMapping(value = "/settings", produces = MediaType.APPLICATION_JSON_VALUE)
     public GetSettingsDtoResponse getSettings(@CookieValue(value = "JAVASESSIONID", defaultValue = "") String token) {
         return settingsService.getSettings(token);

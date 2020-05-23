@@ -11,24 +11,24 @@ public class MyError {
         this.message = errorCode.getErrorString();
     }
 
-    public MyError(String code, String field, String message) {
-        this.errorCode = convert(code);
-        this.field = field;
-        this.message = message;
+    public MyError(ServerErrorCode errorCode, Field field, String param) {
+        this.errorCode = errorCode;
+        this.field = field.getFieldString();
+        this.message = String.format(errorCode.getErrorString(), param);
     }
 
-    public MyError(ServerErrorCode errorCode, Field field, String message) {
+
+    public MyError(String code, String field, String message, String param) {
+        this.errorCode = convert(code);
+        this.field = field;
+        this.message = String.format(message, param);
+    }
+
+    public MyError(ServerErrorCode errorCode, Field field, String message, String param) {
         this.errorCode = errorCode;
         this.field = field.getFieldString();
         this.message = message;
     }
-
-    public MyError(String code, Field field, String message) {
-        this.errorCode = convert(code);
-        this.field = field.getFieldString();
-        this.message = message;
-    }
-
 
 
     public MyError() {
@@ -36,7 +36,7 @@ public class MyError {
 
     private ServerErrorCode convert(String code) {
         switch (code) {
-            case "RussianName": return ServerErrorCode.WRONG_RUSSIAN_NAME;
+            case "RussianName": return ServerErrorCode.INVALID_RUSSIAN_NAME;
             case "Login": return ServerErrorCode.INVALID_LOGIN;
             case "MaxNameLength": return ServerErrorCode.MAX_NAME_LENGTH;
             case "PasswordMinLength": return ServerErrorCode.PASSWORD_MIN_LENGTH;

@@ -1,10 +1,8 @@
 package net.thumbtack.school.hospital.dto.request;
 
 
-import net.thumbtack.school.hospital.validation.Login;
-import net.thumbtack.school.hospital.validation.MaxNameLength;
-import net.thumbtack.school.hospital.validation.PasswordMinLength;
-import net.thumbtack.school.hospital.validation.RussianName;
+import net.thumbtack.school.hospital.validation.*;
+
 
 public class RegUserDtoRequest {
 

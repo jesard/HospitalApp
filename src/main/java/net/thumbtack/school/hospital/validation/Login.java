@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target( { ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Login {
-    String message() default "Invalid login";
+    String message() default "Invalid login %s";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -4,7 +4,7 @@ import javax.validation.constraints.NotEmpty;
 
 public class UpdateAdminDtoRequest extends UpdateUserDtoRequest {
 
-    @NotEmpty
+    @NotEmpty(message = "Empty position")
     private String position;
 
     public UpdateAdminDtoRequest(String firstName, String lastName, String patronymic, String oldPassword, String newPassword, String position) {

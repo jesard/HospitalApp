@@ -18,9 +18,8 @@ public class StatisticsEndpoint {
     public StatsDoctorDtoResponse getDoctorStatistics(@CookieValue(value = "JAVASESSIONID", defaultValue = "") String token,
                                                       @PathVariable("doctorId") int doctorId,
                                                       @RequestParam(required = false) String startDate,
-                                                      @RequestParam(required = false) String endDate,
-                                                      @RequestParam(required = false, defaultValue = "false") boolean detailed) throws ServerException {
-        return statisticsService.getDoctorStatistics(doctorId, startDate, endDate, detailed, token);
+                                                      @RequestParam(required = false) String endDate) throws ServerException {
+        return statisticsService.getDoctorStatistics(doctorId, startDate, endDate, token);
     }
 
     @GetMapping(value = "/doctors", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -28,7 +27,7 @@ public class StatisticsEndpoint {
                                                         @RequestParam(required = false) String speciality,
                                                         @RequestParam(required = false) String startDate,
                                                         @RequestParam(required = false) String endDate,
-                                                        @RequestParam(required = false, defaultValue = "false") boolean detailed) throws ServerException {
+                                                        @RequestParam(required = false, defaultValue = "no") String detailed) throws ServerException {
         return statisticsService.getDoctorsStatistics(speciality, startDate, endDate, detailed, token);
     }
 

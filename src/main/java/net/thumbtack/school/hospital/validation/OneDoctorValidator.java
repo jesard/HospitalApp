@@ -1,5 +1,6 @@
 package net.thumbtack.school.hospital.validation;
 
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.BeanWrapperImpl;
 
 import javax.validation.ConstraintValidator;
@@ -15,6 +16,18 @@ public class OneDoctorValidator implements ConstraintValidator<OneDoctor, Object
         Integer doctorId = (Integer) new BeanWrapperImpl(o).getPropertyValue("doctorId");
         String speciality = (String) new BeanWrapperImpl(o).getPropertyValue("speciality");
 
-        return (doctorId == null || doctorId == 0) == (speciality == null || speciality.length() == 0);
+        if (doctorId == null || doctorId == 0) {
+            if (speciality != null && speciality.length() != 0) {
+                return true;
+            }
+        }
+        if (speciality == null || speciality.length() == 0) return true;
+
+        ctx.disableDefaultConstraintViolation();
+        ctx.buildConstraintViolationWithTemplate(
+                "One of (doctorId, speciality) should be empty").addConstraintViolation();
+        return false;
+
+
     }
 }

@@ -23,6 +23,9 @@ public class MakeAppointmentDtoRequest {
         this.time = time;
     }
 
+    public MakeAppointmentDtoRequest() {
+    }
+
     public int getDoctorId() {
         return doctorId;
     }

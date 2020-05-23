@@ -124,5 +124,9 @@ public interface DoctorMapper {
     @Delete("DELETE FROM commission WHERE ticket_number = #{ticketNumber}")
     void deleteCommission(String ticketNumber);
 
+    @Update("UPDATE doctor SET termination_date = #{date} WHERE id = #{doctorId} ")
+    void setTerminationDate(@Param("doctorId") int doctorId, @Param("date") LocalDate date);
 
+    @Delete("DELETE FROM user WHERE id IN (SELECT user_id FROM doctor WHERE termination_date <= #{now})")
+    int deleteDoctorsWithTerminationDate(LocalDate now);
 }

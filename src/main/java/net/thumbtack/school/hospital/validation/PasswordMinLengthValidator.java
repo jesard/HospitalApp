@@ -11,7 +11,13 @@ public class PasswordMinLengthValidator implements ConstraintValidator<PasswordM
     private int minPasswordLength;
 
     @Override
-    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return s.length() >= minPasswordLength;
+    public boolean isValid(String s, ConstraintValidatorContext ctx) {
+        if (s.length() < minPasswordLength) {
+            ctx.disableDefaultConstraintViolation();
+            ctx.buildConstraintViolationWithTemplate(
+                    "Too short password").addConstraintViolation();
+            return false;
+        }
+        return true;
     }
 }

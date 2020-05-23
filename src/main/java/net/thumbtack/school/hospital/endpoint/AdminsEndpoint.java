@@ -27,17 +27,6 @@ public class AdminsEndpoint {
         return adminService.updateAdmin(request, token);
     }
 
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ErrorDtoResponse handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-//
-//        List<Error> errors = new ArrayList<>();
-//
-//        ex.getBindingResult().getFieldErrors().forEach(error ->
-//                errors.add(new Error(error.getCode(), error.getField(), error.getDefaultMessage())));
-//
-//        return new ErrorDtoResponse(errors);
-//    }
 
 
 }

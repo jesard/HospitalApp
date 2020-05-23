@@ -47,11 +47,13 @@
 //        debugDao.deleteAllUsers();
 //    }
 //
+//    @Ignore
 //    @Test
 //    public void testGetAll() throws Exception {
 //        mvc.perform(get("/api/test")).andExpect(status().isOk());
 //    }
 //
+//    @Ignore
 //    @Test
 //    public void testAdminPost() throws Exception {
 //        RegAdminDtoRequest request = new RegAdminDtoRequest("укпукп", "укпукп", "Иванович", "junior admin", "gerewfg", "22ацуацуа");
@@ -64,54 +66,19 @@
 //        assertEquals(object.get("lastName").getAsString(), request.getLastName());
 //    }
 //
+//    @Ignore
 //    @Test
 //    public void testPatientReg() throws Exception {
 //        RegPatientDtoRequest request = new RegPatientDtoRequest("Василий","Мураев", "Иванович", "efef@wefwe.ru", "frfrferf", "489348", "faffasf", "fefefefefefef");
-//        //String a = gson.toJson(request);
+//
 //        MvcResult result = mvc.perform(post("/api/patients")
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .content(gson.toJson(request)))
 //                .andReturn();
-//        //String response = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+//
 //        JsonObject object = new JsonParser().parse(result.getResponse().getContentAsString(StandardCharsets.UTF_8)).getAsJsonObject();
 //        assertEquals(object.get("lastName").getAsString(), request.getLastName());
 //    }
 //
-//    @Ignore
-//    @Test
-//    public void testLoginUsingRestTemplate() throws Exception {
-//        final String url1 = "http://localhost:8080/api/doctors";
-//        final String url2 = "http://localhost:8080/api/sessions";
-//        final String url3 = "http://localhost:8080/api/account";
-//        final String url4 = "http://localhost:8080/api/patients";
 //
-//        RestTemplate template = new RestTemplate();
-//
-//
-//        String loginJson = "{\"login\": \"faffasf\"," +
-//                "\"password\": \"fefefefefefef\"}";
-//
-////        HttpEntity<String> insertRequest = new HttpEntity<>(REGDOCJSON1);
-////        HttpEntity<String> insertResponse = template.exchange(url1, HttpMethod.POST, insertRequest, String.class);
-//
-//        HttpHeaders headers1 = new HttpHeaders();
-//        headers1.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<String> loginRequest = new HttpEntity<>(loginJson, headers1);
-//        HttpEntity<String> loginResponse = template.exchange(url2, HttpMethod.POST, loginRequest, String.class);
-//        HttpHeaders headers = loginResponse.getHeaders();
-//        String set_cookie = headers.getFirst(HttpHeaders.SET_COOKIE);
-//        String token = set_cookie != null ? set_cookie.replace("JAVASESSIONID=", "") : null;
-//
-//        HttpHeaders requestHeaders = new HttpHeaders();
-//        requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
-//
-//        HttpEntity requestEntity = new HttpEntity(null, requestHeaders);
-//
-//        ResponseEntity response2 = template.exchange(url4, HttpMethod.POST, requestEntity, User.class);
-//        User user = (User) response2.getBody();
-//
-//        if (user != null) {
-//            assertEquals("Watson", user.getLastName());
-//        } else fail();
-//    }
 //}

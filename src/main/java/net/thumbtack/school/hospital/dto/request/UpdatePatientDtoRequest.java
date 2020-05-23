@@ -7,10 +7,10 @@ import javax.validation.constraints.NotEmpty;
 
 public class UpdatePatientDtoRequest extends UpdateUserDtoRequest {
 
-    @Email
+    @Email(message = "Invalid email ${validatedValue}")
     private String email;
 
-    @NotEmpty
+    @NotEmpty(message = "Empty address")
     private String address;
 
     @MobilePhone

@@ -13,9 +13,23 @@ public class DebugDaoImpl extends DaoImplBase {
         LOGGER.debug("DAO delete all Users");
         try (SqlSession sqlSession = getSession()) {
             try {
-                getUserMapper(sqlSession).deleteAll();
+                getUserMapper(sqlSession).deleteAllUsers();
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't delete all Users", ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
+    }
+
+    public void deleteAllSessions() {
+        LOGGER.debug("DAO delete all Sessions");
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getUserMapper(sqlSession).deleteAllSessions();
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't delete all Sessions", ex);
                 sqlSession.rollback();
                 throw ex;
             }

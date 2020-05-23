@@ -9,6 +9,8 @@ import net.thumbtack.school.hospital.error.ServerErrorCode;
 import net.thumbtack.school.hospital.error.ServerException;
 import net.thumbtack.school.hospital.model.Doctor;
 import net.thumbtack.school.hospital.model.Patient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,20 +18,24 @@ import java.util.List;
 
 public class StatisticsService extends UserService {
 
-    private int getDoctorAppointmentsNumber(int doctorId, LocalDate startDate, LocalDate endDate) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsService.class);
+
+    private int getDoctorAppointmentsNumber(int doctorId, LocalDate startDate, LocalDate endDate) throws ServerException {
         return doctorDao.getDoctorAppointmentsNumber(doctorId, startDate, endDate);
     }
 
-    private int getDoctorWorkingMinutesBySchedule(int doctorId, LocalDate startDate, LocalDate endDate) {
+    private int getDoctorWorkingMinutesBySchedule(int doctorId, LocalDate startDate, LocalDate endDate) throws ServerException {
         return doctorDao.getWorkingMinutesBySchedule(doctorId, startDate, endDate);
     }
 
-    private int getPatientAppointmentsNumber(int patientId, String startDate, String endDate) {
+    private int getPatientAppointmentsNumber(int patientId, LocalDate startDate, LocalDate endDate) {
         return patientDao.getPatientAppointmentsNumber(patientId, startDate, endDate);
     }
 
-    public StatsDoctorDtoResponse getDoctorStatistics(int doctorId, String startDate, String endDate, boolean detailed, String token) throws ServerException {
+    public StatsDoctorDtoResponse getDoctorStatistics(int doctorId, String startDate, String endDate, String token) throws ServerException {
+        LOGGER.debug("Service get stats for doctor with id {}, dates {} - {}", doctorId, startDate, endDate);
         if (!(getUserDecriptorByToken(token).equals(ADMIN) || getUserDecriptorByToken(token).equals(DOCTOR))) {
+            LOGGER.info("Can't  get stats for doctor with id {}, dates {} - {}: {}", doctorId, startDate, endDate, ServerErrorCode.WRONG_USER.getErrorString());
             throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
         }
         LocalDate start = LocalDate.parse(startDate, formatterDate);
@@ -42,8 +48,10 @@ public class StatisticsService extends UserService {
         return new StatsDoctorDtoResponse(doctorId, doctor.getFirstName(), doctor.getLastName(), doctor.getPatronymic(), doctor.getSpeciality(), workTime, patientsTaken);
     }
 
-    public StatsDoctorsDtoResponse getDoctorsStatistics(String speciality, String startDate, String endDate, boolean detailed, String token) throws ServerException {
+    public StatsDoctorsDtoResponse getDoctorsStatistics(String speciality, String startDate, String endDate, String detailed, String token) throws ServerException {
+        LOGGER.debug("Service get stats for doctors, speciality = {}, dates {} - {}", speciality, startDate, endDate);
         if (!(getUserDecriptorByToken(token).equals(ADMIN) || getUserDecriptorByToken(token).equals(DOCTOR))) {
+            LOGGER.info("Can't  get stats for doctors, speciality = {}, dates {} - {}: {}", speciality, startDate, endDate, ServerErrorCode.WRONG_USER.getErrorString());
             throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
         }
         List<Integer> doctorIds;
@@ -62,7 +70,7 @@ public class StatisticsService extends UserService {
             int patientsTaken = getDoctorAppointmentsNumber(doctorId, start, end);
             totalWorkMinutes += workMinutes;
             totalPatientsTaken += patientsTaken;
-            if (detailed) {
+            if (detailed.equals("yes")) {
                 int userId = doctorDao.getUserIdByDoctorId(doctorId);
                 Doctor doctor = doctorDao.getDoctorByUserId(userId);
                 String workTime = workMinutes / 60 + " h " + workMinutes % 60 + " m";
@@ -83,7 +91,9 @@ public class StatisticsService extends UserService {
                 throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
             }
         }
-        int appointmentsNumber = getPatientAppointmentsNumber(patientId, startDate, endDate);
+        LocalDate start = LocalDate.parse(startDate, formatterDate);
+        LocalDate end = LocalDate.parse(endDate, formatterDate);
+        int appointmentsNumber = getPatientAppointmentsNumber(patientId, start, end);
         return new StatsPatientDtoResponse(patientId, patient.getFirstName(), patient.getLastName(), patient.getPatronymic(), patient.getEmail(), patient.getAddress(), patient.getPhone(), appointmentsNumber);
     }
 }

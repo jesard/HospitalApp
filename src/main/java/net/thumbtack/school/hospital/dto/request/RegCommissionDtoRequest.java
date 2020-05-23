@@ -11,10 +11,10 @@ public class RegCommissionDtoRequest {
 
     private int patientId;
 
-    @NotEmpty
+    @NotEmpty(message = "Empty list of doctor ids")
     private List<Integer> doctorIds;
 
-    @NotEmpty
+    @NotEmpty(message = "Empty room")
     private String room;
 
     @Date
@@ -23,7 +23,7 @@ public class RegCommissionDtoRequest {
     @Time
     private String time;
 
-    @Min(value = 5, message = "Duration is too short")
+    @Min(value = 5, message = "Duration is too short: ${validatedValue}")
     private int duration;
 
     public RegCommissionDtoRequest(int patientId, List<Integer> doctorIds, String room, String date, String time, int duration) {

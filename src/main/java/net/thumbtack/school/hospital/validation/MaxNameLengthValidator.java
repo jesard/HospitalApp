@@ -11,8 +11,15 @@ public class MaxNameLengthValidator implements ConstraintValidator<MaxNameLength
     private int maxNameLength;
 
     @Override
-    public boolean isValid(String s, ConstraintValidatorContext cvx) {
-        return s.length() <= maxNameLength;
+    public boolean isValid(String s, ConstraintValidatorContext ctx) {
+
+        if (s.length() > maxNameLength) {
+            ctx.disableDefaultConstraintViolation();
+            ctx.buildConstraintViolationWithTemplate(
+                    "Too long %s").addConstraintViolation();
+            return false;
+        }
+        return true;
     }
 
 }

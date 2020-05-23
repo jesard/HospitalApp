@@ -4,6 +4,7 @@ import net.thumbtack.school.hospital.dto.request.RegUserDtoRequest;
 import net.thumbtack.school.hospital.validation.Date;
 import net.thumbtack.school.hospital.validation.OneSchedule;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
@@ -24,8 +25,10 @@ public class RegDocDtoRequest extends RegUserDtoRequest {
     @Date
     private String dateEnd;
 
-    //TODO validation
+    @Valid
     private WeekSchedule weekSchedule;
+
+    @Valid
     private List<WeekDaysSchedule> weekDaysSchedules = new ArrayList<>();
 
     @Min(value = 5, message = "Duration is too short")

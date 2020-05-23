@@ -4,7 +4,7 @@ import javax.validation.constraints.NotEmpty;
 
 public class RegAdminDtoRequest extends RegUserDtoRequest {
 
-    @NotEmpty
+    @NotEmpty(message = "Empty position")
     private String position;
 
     public RegAdminDtoRequest(String firstName, String lastName, String patronymic, String position, String login, String password) {

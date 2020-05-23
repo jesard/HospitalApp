@@ -15,6 +15,9 @@ public class MakeAppointmentDtoResponse extends RegDoctorDtoResponse {
         this.time = time;
     }
 
+    public MakeAppointmentDtoResponse() {
+    }
+
     public String getTicket() {
         return ticket;
     }

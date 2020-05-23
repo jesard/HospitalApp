@@ -9,13 +9,16 @@ import java.time.format.DateTimeParseException;
 public class DateValidator implements ConstraintValidator<Date, String> {
 
     @Override
-    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(String s, ConstraintValidatorContext ctx) {
+        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         try {
-            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             LocalDate.parse(s, formatterDate);
         } catch (DateTimeParseException ex) {
+            ctx.disableDefaultConstraintViolation();
+            ctx.buildConstraintViolationWithTemplate(
+                    "Invalid date %s").addConstraintViolation();
             return false;
         }
-        return true;
+        return !LocalDate.parse(s, formatterDate).isBefore(LocalDate.now());
     }
 }

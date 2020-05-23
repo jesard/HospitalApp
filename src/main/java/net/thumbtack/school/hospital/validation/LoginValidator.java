@@ -11,11 +11,17 @@ public class LoginValidator implements ConstraintValidator<Login, String> {
         private int maxNameLength;
 
         @Override
-        public boolean isValid(String s, ConstraintValidatorContext cvx) {
-            return s != null
-                    && s.length() > 0
-                    && s.length() < maxNameLength
-                    && s.matches("^[а-яА-ЯёЁa-zA-Z0-9]+$");
+        public boolean isValid(String s, ConstraintValidatorContext ctx) {
+                if (s == null
+                        || s.length() == 0
+                        || s.length() > maxNameLength
+                        || !s.matches("^[а-яА-ЯёЁa-zA-Z0-9]+$")) {
+                        ctx.disableDefaultConstraintViolation();
+                        ctx.buildConstraintViolationWithTemplate(
+                                "Invalid login %s").addConstraintViolation();
+                        return false;
+                }
+                return true;
         }
 
 }

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
@@ -75,13 +76,12 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
     @Override
     public int getSpecialityId(String speciality) throws ServerException {
         LOGGER.debug("DAO get speciality id {}", speciality);
-        //TODO double-try required?
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getDoctorMapper(sqlSession).getSpecialityId(speciality);
             } catch (BindingException ex) {
                 LOGGER.info("Speciality not found {}", speciality, ex);
-                throw new ServerException(new MyError(ServerErrorCode.SPECIALITY_NOT_FOUND, Field.SPECIALITY));
+                throw new ServerException(new MyError(ServerErrorCode.SPECIALITY_NOT_FOUND, Field.SPECIALITY, speciality));
             } catch (PersistenceException ex) {
                 LOGGER.info("Can't get speciality {}: {}", speciality, ex);
                 throw ex;
@@ -97,7 +97,7 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
                 return getDoctorMapper(sqlSession).getRoomId(room);
             } catch (BindingException ex) {
                 LOGGER.info("ROOM_NOT_FOUND {}: {}", room, ex);
-                throw new ServerException(new MyError(ServerErrorCode.ROOM_NOT_FOUND, Field.ROOM));
+                throw new ServerException(new MyError(ServerErrorCode.ROOM_NOT_FOUND, Field.ROOM, room));
             } catch (PersistenceException ex) {
                 LOGGER.info("Can't get room {}: {}", room, ex);
                 throw ex;
@@ -112,8 +112,8 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
             try {
                 return getDoctorMapper(sqlSession).getRoomIdByDoctorId(doctorId);
             } catch (BindingException ex) {
-                LOGGER.info("ROOM_NOT_FOUND", ex);
-                throw new ServerException(new MyError(ServerErrorCode.ROOM_NOT_FOUND, Field.ROOM));
+                LOGGER.info("USER_NOT_FOUND", ex);
+                throw new ServerException(new MyError(ServerErrorCode.USER_NOT_FOUND, Field.DOCTOR_ID, "doctorId:" + doctorId));
             } catch (PersistenceException ex) {
                 LOGGER.info("Can't get room", ex);
                 throw ex;
@@ -156,19 +156,14 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
                         }
                     }
                 } else {
-                    throw new ServerException(new MyError(ServerErrorCode.ROOM_IS_BUSY, Field.ROOM));
+                    throw new ServerException(new MyError(ServerErrorCode.ROOM_IS_BUSY, Field.ROOM, doctor.getRoom()));
                 }
             } catch (PersistenceException ex) {
-                sqlSession.rollback();
-                if (ex.getCause() instanceof MySQLIntegrityConstraintViolationException) {
-                    throw new ServerException(new MyError(ServerErrorCode.USER_DUPLICATE, Field.LOGIN));
-                } else throw ex;
-            } catch (ServerException ex) {
-                LOGGER.info("ROOM_IS_BUSY {}: {}", doctor.getRoom(), ex);
+                LOGGER.info("Can't insert Doctor {}: {}", doctor, ex);
                 sqlSession.rollback();
                 throw ex;
-            } catch (RuntimeException ex) {
-                LOGGER.info("Can't insert Doctor {}: {}", doctor, ex);
+            } catch (ServerException ex) {
+                LOGGER.info("ROOM_IS_BUSY {}: {}", doctor.getRoom(), ex);
                 sqlSession.rollback();
                 throw ex;
             }
@@ -207,10 +202,10 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
                          }
                      }
                  } else {
-                     throw new ServerException(new MyError(ServerErrorCode.ROOM_IS_BUSY, Field.ROOM));
+                     throw new ServerException(new MyError(ServerErrorCode.ROOM_IS_BUSY, Field.ROOM, room));
                  }
 
-            } catch (RuntimeException | ServerException ex) {
+            } catch (PersistenceException | ServerException ex) {
                 LOGGER.info("Can't insert Schedule for doctor with id {}", doctorId, ex);
                 sqlSession.rollback();
                 throw ex;
@@ -257,10 +252,10 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
                         throw new ServerException(new MyError(ServerErrorCode.WRONG_SCHEDULE, Field.SCHEDULE));
                     }
                 } else {
-                    throw new ServerException(new MyError(ServerErrorCode.ROOM_IS_BUSY, Field.ROOM));
+                    throw new ServerException(new MyError(ServerErrorCode.ROOM_IS_BUSY, Field.ROOM, room));
                 }
 
-            } catch (RuntimeException | ServerException ex) {
+            } catch (PersistenceException | ServerException ex) {
                 LOGGER.info("Can't insert Schedule for doctor with id {}", doctorId, ex);
                 sqlSession.rollback();
                 throw ex;
@@ -269,34 +264,8 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
         }
     }
 
-//    @Override
-//    public int getSlotIdByDateTime(int doctorId, LocalDate date, LocalTime time) {
-//        LOGGER.debug("DAO get Slot id for appointment: doctor id {}, {} {}", doctorId, date, time);
-//        try (SqlSession sqlSession = getSession()) {
-//            try {
-//                return getScheduleMapper(sqlSession).getSlotIdByDateTime(doctorId, date, time);
-//            } catch (RuntimeException ex) {
-//                LOGGER.info("Can't get Slot id for appointment:  doctor id {} {} {} - {}", doctorId, date, time, ex);
-//                throw ex;
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public List<String> getTicketsByDateTimeRange(int doctorId, LocalDate date, LocalTime timeStart, LocalTime timeEnd) {
-//        LOGGER.debug("DAO get Ticket numbers for appointment: doctor id {}, {} {} {}", doctorId, date, timeStart, timeEnd);
-//        try (SqlSession sqlSession = getSession()) {
-//            try {
-//                return getScheduleMapper(sqlSession).getTicketsByDateTimeRange(doctorId, date, timeStart, timeEnd);
-//            } catch (RuntimeException ex) {
-//                LOGGER.info("Can't get Ticket numbers for appointment: doctor id {} {} {} {} - {}", doctorId, date, timeStart, timeEnd, ex);
-//                throw ex;
-//            }
-//        }
-//    }
-
     @Override
-    public Doctor getDoctorByUserId(int userId) {
+    public Doctor getDoctorByUserId(int userId) throws ServerException {
         LOGGER.debug("DAO get Doctor with id: {}", userId);
         User user = getUserById(userId);
         try (SqlSession sqlSession = getSession()) {
@@ -308,7 +277,10 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
                 doctor.setLogin(user.getLogin());
                 doctor.setPassword(user.getPassword());
                 return doctor;
-            } catch (RuntimeException ex) {
+            } catch (BindingException ex) {
+                LOGGER.info("Can't get Doctor with id {}: {}", userId, ex);
+                throw new ServerException(new MyError(ServerErrorCode.USER_NOT_FOUND, Field.COOKIE));
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't get Doctor with id {}: {}", userId, ex);
                 throw ex;
             }
@@ -316,11 +288,14 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
     }
 
     @Override
-    public int getUserIdByDoctorId(int doctorId) {
+    public int getUserIdByDoctorId(int doctorId) throws ServerException {
         LOGGER.debug("DAO get userId by doctorId {}", doctorId);
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getDoctorMapper(sqlSession).getUserIdByDoctorId(doctorId);
+            } catch (BindingException ex) {
+                LOGGER.info("Can't get userId by doctorId {} - {}", doctorId, ex);
+                throw new ServerException(new MyError(ServerErrorCode.USER_NOT_FOUND, Field.DOCTOR_ID, "doctorId:" + doctorId));
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't get userId by doctorId {} - {}", doctorId, ex);
                 throw ex;
@@ -329,7 +304,7 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
     }
 
     @Override
-    public Doctor getDoctorWithoutScheduleByDoctorId(int doctorId) {
+    public Doctor getDoctorWithoutScheduleByDoctorId(int doctorId) throws ServerException {
         LOGGER.debug("DAO get Doctor with doctorId: {}", doctorId);
         try (SqlSession sqlSession = getSession()) {
             try {
@@ -341,8 +316,27 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
                 doctor.setLogin(user.getLogin());
                 doctor.setPassword(user.getPassword());
                 return doctor;
+            } catch (BindingException ex) {
+                LOGGER.info("Can't Doctor with doctorId: {} - {}", doctorId, ex);
+                throw new ServerException(new MyError(ServerErrorCode.USER_NOT_FOUND, Field.DOCTOR_ID, "doctorId:" + doctorId));
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't Doctor with doctorId: {} - {}", doctorId, ex);
+                throw ex;
+            }
+        }
+    }
+
+    @Override
+    public int getSlotIdByDateTime(int doctorId, LocalDate date, LocalTime timeStart) throws ServerException {
+        LOGGER.debug("DAO get SlotId by doctorId {}, date {}, time {}", doctorId, date, timeStart);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                return getScheduleMapper(sqlSession).getSlotIdByDateTime(doctorId, date, timeStart);
+            } catch (BindingException ex) {
+                LOGGER.info("Can't get SlotId by doctorId {}, date {}, time {} - {}", doctorId, date, timeStart, ex);
+                throw new ServerException(new MyError(ServerErrorCode.SCHEDULE_NOT_EXISTS, Field.DATETIME));
+            } catch (PersistenceException ex) {
+                LOGGER.info("Can't get SlotId by doctorId {}, date {}, time {} - {}", doctorId, date, timeStart, ex);
                 throw ex;
             }
         }
@@ -354,8 +348,8 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getScheduleMapper(sqlSession).getSlotIdsByDateTimeRange(doctorId, date, timeStart, timeEnd);
-            } catch (RuntimeException ex) {
-                LOGGER.info("Can't get Slot id for appointment:  doctor id {} {} {} {} - {}", doctorId, date, timeStart, timeEnd, ex);
+            }  catch (PersistenceException ex) {
+                LOGGER.info("Can't get Slot id for appointment: doctor id {} {} {} {} - {}", doctorId, date, timeStart, timeEnd, ex);
                 throw ex;
             }
         }
@@ -368,7 +362,7 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getScheduleMapper(sqlSession).getRoomOccupationDatesByDoctorId(doctorId, roomId);
-            } catch (RuntimeException ex) {
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't get Room {} Occupation Date By Doctor Id {}", doctorId, room, ex);
                 throw ex;
             }
@@ -376,11 +370,14 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
     }
 
     @Override
-    public int getDoctorIdByTicketNumber(String ticketNumber) {
+    public int getDoctorIdByTicketNumber(String ticketNumber) throws ServerException {
         LOGGER.debug("DAO get doctor id by ticket {}", ticketNumber);
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getDoctorMapper(sqlSession).getDoctorIdByTicketNumber(ticketNumber);
+            } catch (BindingException ex) {
+                LOGGER.info("Can't get doctor id by ticket {} - {}", ticketNumber, ex);
+                throw new ServerException(new MyError(ServerErrorCode.TICKET_NOT_FOUND, Field.TICKET_NUMBER, ticketNumber));
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't get doctor id by ticket {} - {}", ticketNumber, ex);
                 throw ex;
@@ -394,7 +391,7 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getDoctorMapper(sqlSession).getAllDoctorIds();
-            } catch (RuntimeException ex) {
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't get all Doctor Ids -", ex);
                 throw ex;
             }
@@ -408,7 +405,7 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getDoctorMapper(sqlSession).getAllDoctorIdsBySpeciality(specialityId);
-            } catch (RuntimeException ex) {
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't get all Doctor Ids with Speciality: {} - {}", speciality, ex);
                 throw ex;
             }
@@ -421,7 +418,7 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
         try (SqlSession sqlSession = getSession()) {
             try {
                 getDoctorMapper(sqlSession).insertCommission(timeStart, timeEnd, room, ticketNumber, patientId);
-            } catch (RuntimeException ex) {
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't insert Commission {} - {}", ticketNumber, ex);
                 sqlSession.rollback();
                 throw ex;
@@ -431,16 +428,51 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
     }
 
     @Override
-    public String getRoomByCommissionTicket(String ticketNumber) {
+    public String getRoomByCommissionTicket(String ticketNumber) throws ServerException {
         LOGGER.debug("DAO get Room by commission ticket {}", ticketNumber);
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getScheduleMapper(sqlSession).getRoomByCommissionTicket(ticketNumber);
-            } catch (RuntimeException ex) {
+            } catch (BindingException ex) {
+                LOGGER.info("Can't get Room by commission ticket {} - {}", ticketNumber, ex);
+                throw new ServerException(new MyError(ServerErrorCode.TICKET_NOT_FOUND, Field.TICKET_NUMBER, ticketNumber));
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't get Room by commission ticket {} - {}", ticketNumber, ex);
                 throw ex;
             }
         }
+    }
+
+    @Override
+    public void setTerminationDate(int doctorId, LocalDate date) {
+        LOGGER.debug("DAO set firing date {} for doctor with id {}", date, doctorId);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getDoctorMapper(sqlSession).setTerminationDate(doctorId, date);
+            } catch (PersistenceException ex) {
+                LOGGER.info("Can't set firing date {} for doctor with id {}", date, doctorId, ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
+    }
+
+    @Override
+    public int deleteDoctorsWithTerminationDate(LocalDate now) {
+        LOGGER.debug("DAO delete doctors with termination date");
+        int deletedRows;
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                deletedRows = getDoctorMapper(sqlSession).deleteDoctorsWithTerminationDate(now);
+            } catch (PersistenceException ex) {
+                LOGGER.info("Can't delete doctors with termination date", ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
+        return deletedRows;
     }
 
     @Override
@@ -452,7 +484,7 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
                 deletedTickets = getScheduleMapper(sqlSession).getTicketsAfterDate(doctorId, startDate);
                 getScheduleMapper(sqlSession).deleteScheduleFromDate(doctorId, startDate);
                 deleteRoomOccupationFromDate(doctorId, startDate, sqlSession);
-            } catch (RuntimeException ex) {
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't delete schedule for doctor with id {} from {} - {}", doctorId, startDate, ex);
                 sqlSession.rollback();
                 throw ex;
@@ -462,28 +494,13 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
         return deletedTickets;
     }
 
-//    @Override
-//    public void deleteRoomOccupationFromDate(int doctorId, LocalDate startDate) {
-//        LOGGER.debug("DAO delete occupation for doctor with id {} from {}", doctorId, startDate);
-//        try (SqlSession sqlSession = getSession()) {
-//            try {
-//                getDoctorMapper(sqlSession).deleteRoomOccupation(doctorId, startDate);
-//            } catch (RuntimeException ex) {
-//                LOGGER.info("Can't delete occupation for doctor with id {} from {}- {}", doctorId, startDate, ex);
-//                sqlSession.rollback();
-//                throw ex;
-//            }
-//            sqlSession.commit();
-//        }
-//    }
-
     @Override
     public void deleteCommission(String ticketNumber) {
         LOGGER.debug("DAO delete commission with ticket number {}", ticketNumber);
         try (SqlSession sqlSession = getSession()) {
             try {
                 getDoctorMapper(sqlSession).deleteCommission(ticketNumber);
-            } catch (RuntimeException ex) {
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't delete commission with ticket number {} - {}", ticketNumber, ex);
                 sqlSession.rollback();
                 throw ex;
@@ -493,11 +510,14 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
     }
 
     @Override
-    public int getDoctorAppointmentsNumber(int doctorId, LocalDate startDate, LocalDate endDate) {
+    public int getDoctorAppointmentsNumber(int doctorId, LocalDate startDate, LocalDate endDate) throws ServerException {
         LOGGER.debug("DAO get number of patients by doctor with id {} within {} - {}", doctorId, startDate, endDate);
         try (SqlSession sqlSession = getSession()) {
             try {
                 return getScheduleMapper(sqlSession).getPatientsByDoctorDateRange(doctorId, startDate, endDate).size();
+            } catch (BindingException ex) {
+                LOGGER.info("Can't get number of patients by doctor with id {} within {} - {}: {}", doctorId, startDate, endDate, ex);
+                throw new ServerException(new MyError(ServerErrorCode.USER_NOT_FOUND, Field.DOCTOR_ID, "doctorId:" + doctorId));
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't get number of patients by doctor with id {} within {} - {}: {}", doctorId, startDate, endDate, ex);
                 throw ex;
@@ -506,13 +526,16 @@ public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {
     }
 
     @Override
-    public int getWorkingMinutesBySchedule(int doctorId, LocalDate startDate, LocalDate endDate) {
+    public int getWorkingMinutesBySchedule(int doctorId, LocalDate startDate, LocalDate endDate) throws ServerException {
         LOGGER.debug("DAO get working hours by doctor with id {} within {} - {}", doctorId, startDate, endDate);
         try (SqlSession sqlSession = getSession()) {
             try {
                 List<Integer> minutesPerDay = getScheduleMapper(sqlSession).getWorkingMinutesByDoctorBySchedule(doctorId, startDate, endDate);
                 return minutesPerDay.stream().reduce(0, Integer::sum);
-            } catch (RuntimeException ex) {
+            } catch (BindingException ex) {
+                LOGGER.info("Can't get working hours by doctor with id {} within {} - {}: {}", doctorId, startDate, endDate, ex);
+                throw new ServerException(new MyError(ServerErrorCode.USER_NOT_FOUND, Field.DOCTOR_ID, "doctorId:" + doctorId));
+            } catch (PersistenceException ex) {
                 LOGGER.info("Can't get working hours by doctor with id {} within {} - {}: {}", doctorId, startDate, endDate, ex);
                 throw ex;
             }
