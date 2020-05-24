@@ -27,7 +27,7 @@ public class SessionsEndpoint {
     }
 
     @DeleteMapping(value = "/sessions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmptyJsonResponse logout(@CookieValue(value = "JAVASESSIONID", defaultValue = "") String token) {
+    public EmptyJsonResponse logout(@CookieValue(value = "JAVASESSIONID", defaultValue = "") String token) throws ServerException {
         return userService.logout(token);
     }
 

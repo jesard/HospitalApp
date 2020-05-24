@@ -22,7 +22,7 @@ public enum ServerErrorCode {
     SPECIALITY_NOT_FOUND("Speciality not found %s"),
     TICKET_NOT_FOUND("Ticket not found %s"),
     ONE_NOT_NULL("One value should be empty"),
-    WRONG_MOBILE_PHONE("Wrong mobile phone number %s"),
+    INVALID_MOBILE_PHONE("Invalid mobile phone number %s"),
     WRONG_REQUEST_FORMAT("Wrong request format %s"),
     DATABASE_ERROR("Database error"),
     INVALID_JSON("Invalid request JSON"),
@@ -30,6 +30,7 @@ public enum ServerErrorCode {
     SAME_DAY_SAME_DOCTOR("Ticket to the same doctor same day exists"),
     PATIENT_IS_BUSY("Patient is busy %s"),
     SCHEDULE_NOT_EXISTS("Doctor has no appointments at the time"),
+    INVALID_EMAIL("Invalid email"),
     UNKNOWN("Unknown server error");
 
     private String message;

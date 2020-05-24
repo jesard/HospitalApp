@@ -42,10 +42,13 @@ public class MyError {
             case "PasswordMinLength": return ServerErrorCode.PASSWORD_MIN_LENGTH;
             case "Date": return ServerErrorCode.WRONG_DATE;
             case "Time": return ServerErrorCode.WRONG_TIME;
-            case "WeekDay": return ServerErrorCode.WRONG_DAY_OF_WEEK;
+            case "WeekDay":
+            case "WeekDays":
+                return ServerErrorCode.WRONG_DAY_OF_WEEK;
             case "OneNotNull": return ServerErrorCode.ONE_NOT_NULL;
-            case "MobilePhone": return ServerErrorCode.WRONG_MOBILE_PHONE;
+            case "MobilePhone": return ServerErrorCode.INVALID_MOBILE_PHONE;
             case "NotEmpty": return ServerErrorCode.EMPTY_VALUE;
+            case "Email": return ServerErrorCode.INVALID_EMAIL;
             default: return ServerErrorCode.UNKNOWN;
         }
     }

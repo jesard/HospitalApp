@@ -2,12 +2,10 @@ package net.thumbtack.school.hospital.endpoint;
 
 import net.thumbtack.school.hospital.dto.request.LoginDtoRequest;
 import net.thumbtack.school.hospital.dto.request.RegPatientDtoRequest;
-import net.thumbtack.school.hospital.dto.request.UpdateAdminDtoRequest;
 import net.thumbtack.school.hospital.dto.request.UpdatePatientDtoRequest;
 import net.thumbtack.school.hospital.dto.response.RegPatientDtoResponse;
 import net.thumbtack.school.hospital.error.ServerException;
 import net.thumbtack.school.hospital.service.PatientService;
-import net.thumbtack.school.hospital.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

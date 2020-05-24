@@ -118,11 +118,6 @@ public class TestRestTemplate extends TestBase {
         return template.exchange(BASEURL + "/commissions", HttpMethod.POST, regCommissionReq, String.class).getBody();
     }
 
-    @Test
-    public void testLogin() throws Exception {
-        String token = loginSuperAdmin();
-        assertNotNull(token);
-    }
 
     @Test
     public void testGetAccountInfoAdmin() throws JsonProcessingException {
@@ -176,6 +171,7 @@ public class TestRestTemplate extends TestBase {
         //doctor busy by another patient for appoint
         try {
             makeAppointment(docId1, "", appDate, appTime, patientToken2);
+            fail();
         }
         catch (HttpStatusCodeException ex) {
             String responseString = ex.getResponseBodyAsString();
@@ -186,6 +182,7 @@ public class TestRestTemplate extends TestBase {
         List<Integer> docIds = Arrays.asList(docId1, docId2);
         try {
             regCommission(patientId2, docIds, doctor1.getRoom(), appDate, appTime, 30, doctorToken1);
+            fail();
         } catch (HttpStatusCodeException ex) {
             String responseString = ex.getResponseBodyAsString();
             assertTrue(responseString.contains("DOCTOR_IS_BUSY"));
@@ -223,6 +220,7 @@ public class TestRestTemplate extends TestBase {
 
         try {
             makeAppointment(0, "surgeon", date, time, patientToken2);
+            fail();
         }
         catch (HttpStatusCodeException ex) {
             String responseString = ex.getResponseBodyAsString();
@@ -231,6 +229,8 @@ public class TestRestTemplate extends TestBase {
 
     }
 
+    @Test
+    public void testComplexScenario() {}
 
 
 }

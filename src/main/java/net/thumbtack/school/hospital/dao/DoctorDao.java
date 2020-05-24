@@ -21,9 +21,6 @@ public interface DoctorDao extends UserDao {
 
     void insertSchedule(int doctorId, String room, List<DaySchedule> schedule) throws ServerException;
 
-//    int getSlotIdByDateTime(int doctorId, LocalDate date, LocalTime time);
-//
-//    List<String> getTicketsByDateTimeRange(int doctorId, LocalDate date, LocalTime timeStart, LocalTime timeEnd);
 
     int getSlotIdByDateTime(int doctorId, LocalDate date, LocalTime timeStart) throws ServerException;
 
@@ -50,8 +47,6 @@ public interface DoctorDao extends UserDao {
     List<Integer> getAllDoctorIds();
 
     List<Integer> getAllDoctorIdsBySpeciality(String speciality) throws ServerException;
-
-//    void deleteRoomOccupationFromDate(int doctorId, LocalDate startDate);
 
     void insertCommission(LocalTime time, LocalTime timeEnd, String room, String ticketNumber, int patientId);
 

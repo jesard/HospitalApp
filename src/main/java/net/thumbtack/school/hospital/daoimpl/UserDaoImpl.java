@@ -113,11 +113,14 @@ public class UserDaoImpl extends DaoImplBase implements UserDao {
     }
 
     @Override
-    public void logout(String token) {
+    public void logout(String token) throws ServerException {
         LOGGER.debug("DAO logout user with token: {}", token);
         try (SqlSession sqlSession = getSession()) {
             try {
-                getUserMapper(sqlSession).logout(token);
+                int deletedRows = getUserMapper(sqlSession).logout(token);
+                if (deletedRows == 0) {
+                    throw new ServerException(new MyError(ServerErrorCode.USER_NOT_FOUND, Field.COOKIE));
+                }
             } catch (PersistenceException ex) {
                 LOGGER.info("Can't get UserId with token {} - {}", token, ex);
                 throw ex;

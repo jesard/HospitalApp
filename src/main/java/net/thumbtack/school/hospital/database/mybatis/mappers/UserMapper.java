@@ -31,7 +31,7 @@ public interface UserMapper {
     void login(@Param("userId") int userId, @Param("token") String token);
 
     @Delete("DELETE FROM session WHERE token = #{token}")
-    void logout(String token);
+    int logout(String token);
 
     @Select("SELECT user_id FROM session WHERE token = #{token}")
     int getUserIdByToken(String token);

@@ -63,7 +63,7 @@ public interface PatientMapper {
     @Select("SELECT COUNT(id) FROM slot_schedule WHERE patient_id = #{patientId} AND date_id IN (SELECT id FROM date_schedule WHERE date >= #{startDate} AND date <= #{endDate}) AND ticket_number NOT LIKE 'C%'")
     int getPatientAppointmentsNumber(@Param("patientId")int patientId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    @Select("SELECT id, slot_start as timeStart, slot_end as timeEnd, date_id, ticket_number as ticketNumber FROM slot_schedule WHERE patient_id = #{patientId} AND date_id IN (SELECT date_id FROM date_schedule WHERE date = #{date})")
+    @Select("SELECT id, slot_start as timeStart, slot_end as timeEnd, date_id, ticket_number as ticketNumber FROM slot_schedule WHERE patient_id = #{patientId} AND date_id IN (SELECT id FROM date_schedule WHERE date = #{date})")
     @Results({
             @Result(property = "daySchedule", column = "date_id", javaType = DaySchedule.class, many =
             @Many(select = "net.thumbtack.school.hospital.database.mybatis.mappers.DoctorMapper.getDayScheduleById", fetchType = FetchType.LAZY))

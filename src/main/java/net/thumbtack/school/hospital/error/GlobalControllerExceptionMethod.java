@@ -48,7 +48,12 @@ public class GlobalControllerExceptionMethod extends ResponseEntityExceptionHand
         List<MyError> errors = new ArrayList<>();
 
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
-            errors.add(new MyError(fieldError.getCode(), fieldError.getField(), fieldError.getDefaultMessage(), fieldError.getRejectedValue().toString()));
+            if (fieldError.getRejectedValue() != null) {
+                errors.add(new MyError(fieldError.getCode(), fieldError.getField(), fieldError.getDefaultMessage(), fieldError.getRejectedValue().toString()));
+            } else {
+                errors.add(new MyError(fieldError.getCode(), fieldError.getField(), fieldError.getDefaultMessage(), ""));
+
+            }
         }
 
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {

@@ -7,6 +7,7 @@ public class MobilePhoneValidator implements ConstraintValidator<MobilePhone, St
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext ctx) {
+        if (s == null) return false;
         if (s.length() < 11
                 || s.replace("-", "").length() > 12
                 || !s.matches("^(\\+7|8)9[0-9\\-]+$")) {

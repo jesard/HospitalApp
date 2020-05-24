@@ -56,7 +56,7 @@ public class UserService {
         }
     }
 
-    public EmptyJsonResponse logout(String token) {
+    public EmptyJsonResponse logout(String token) throws ServerException {
         LOGGER.debug("Service do logout");
         userDao.logout(token);
         return new EmptyJsonResponse();

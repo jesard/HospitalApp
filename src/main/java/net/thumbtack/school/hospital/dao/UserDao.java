@@ -21,5 +21,5 @@ public interface UserDao {
 
     String getDescriptorByUserId(int userId) throws ServerException;
 
-    void logout(String token);
+    void logout(String token) throws ServerException;
 }

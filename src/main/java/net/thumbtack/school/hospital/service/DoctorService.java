@@ -6,21 +6,18 @@ import net.thumbtack.school.hospital.dto.request.regdoctor.RegDocDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekDaysSchedule;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekSchedule;
 import net.thumbtack.school.hospital.dto.response.EmptyJsonResponse;
-import net.thumbtack.school.hospital.error.Field;
-import net.thumbtack.school.hospital.error.MyError;
 import net.thumbtack.school.hospital.dto.response.RegCommissionDtoResponse;
 import net.thumbtack.school.hospital.dto.response.RegPatientDtoResponse;
 import net.thumbtack.school.hospital.dto.response.regdoctor.DayScheduleDtoResponse;
 import net.thumbtack.school.hospital.dto.response.regdoctor.RegDoctorDtoResponse;
 import net.thumbtack.school.hospital.dto.response.regdoctor.SlotDtoResponse;
+import net.thumbtack.school.hospital.error.Field;
+import net.thumbtack.school.hospital.error.MyError;
 import net.thumbtack.school.hospital.error.ServerErrorCode;
 import net.thumbtack.school.hospital.error.ServerException;
 import net.thumbtack.school.hospital.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -167,7 +164,7 @@ public class DoctorService extends UserService {
                 Patient patient = slot.getPatient();
                 if (slot.getPatient() != null) {
                     User user = userDao.getUserById(patient.getUserId());
-                    RegPatientDtoResponse regPatientDtoResponse = new RegPatientDtoResponse(patientId,
+                    RegPatientDtoResponse regPatientDtoResponse = new RegPatientDtoResponse(slot.getPatient().getId(),
                             user.getFirstName(), user.getLastName(), user.getPatronymic(),
                             patient.getEmail(), patient.getAddress(), patient.getPhone());
                     slotResponse.setPatient(regPatientDtoResponse);

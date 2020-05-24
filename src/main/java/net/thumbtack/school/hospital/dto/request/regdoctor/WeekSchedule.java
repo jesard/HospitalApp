@@ -1,7 +1,6 @@
 package net.thumbtack.school.hospital.dto.request.regdoctor;
 
 import net.thumbtack.school.hospital.validation.Time;
-import net.thumbtack.school.hospital.validation.WeekDay;
 import net.thumbtack.school.hospital.validation.WeekDays;
 
 import java.util.ArrayList;

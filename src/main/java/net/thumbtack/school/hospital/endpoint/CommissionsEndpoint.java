@@ -1,11 +1,9 @@
 package net.thumbtack.school.hospital.endpoint;
 
-import net.thumbtack.school.hospital.dto.request.RegAdminDtoRequest;
 import net.thumbtack.school.hospital.dto.request.RegCommissionDtoRequest;
 import net.thumbtack.school.hospital.dto.response.EmptyJsonResponse;
 import net.thumbtack.school.hospital.dto.response.RegCommissionDtoResponse;
 import net.thumbtack.school.hospital.error.ServerException;
-import net.thumbtack.school.hospital.model.Patient;
 import net.thumbtack.school.hospital.service.DoctorService;
 import net.thumbtack.school.hospital.service.PatientService;
 import org.springframework.http.MediaType;

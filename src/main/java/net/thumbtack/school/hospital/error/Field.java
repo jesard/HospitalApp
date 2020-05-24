@@ -2,12 +2,9 @@ package net.thumbtack.school.hospital.error;
 
 public enum Field {
     COOKIE("cookie"),
-    FIRSTNAME("firstName"),
-    LASTNAME("lastName"),
     LOGIN("login"),
     PASSWORD("password"),
     DATE("date"),
-    TIME("time"),
     DATETIME("date/time"),
     ROOM("room"),
     SCHEDULE("Schedule"),

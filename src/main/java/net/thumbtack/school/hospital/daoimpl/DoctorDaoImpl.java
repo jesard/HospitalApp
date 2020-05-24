@@ -1,12 +1,14 @@
 package net.thumbtack.school.hospital.daoimpl;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import net.thumbtack.school.hospital.dao.DoctorDao;
 import net.thumbtack.school.hospital.error.Field;
 import net.thumbtack.school.hospital.error.MyError;
 import net.thumbtack.school.hospital.error.ServerErrorCode;
 import net.thumbtack.school.hospital.error.ServerException;
-import net.thumbtack.school.hospital.model.*;
+import net.thumbtack.school.hospital.model.DaySchedule;
+import net.thumbtack.school.hospital.model.Doctor;
+import net.thumbtack.school.hospital.model.Slot;
+import net.thumbtack.school.hospital.model.User;
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.SqlSession;
@@ -15,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorDaoImpl extends UserDaoImpl implements DoctorDao {

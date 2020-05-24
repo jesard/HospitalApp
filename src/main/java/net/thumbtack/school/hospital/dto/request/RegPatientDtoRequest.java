@@ -5,6 +5,7 @@ import net.thumbtack.school.hospital.validation.MobilePhone;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
+
 public class RegPatientDtoRequest extends RegUserDtoRequest {
 
     @Email(message = "Invalid email ${validatedValue}")

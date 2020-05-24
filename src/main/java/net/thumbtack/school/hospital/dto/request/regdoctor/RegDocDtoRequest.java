@@ -34,7 +34,19 @@ public class RegDocDtoRequest extends RegUserDtoRequest {
     @Min(value = 5, message = "Duration is too short")
     private int duration;
 
+    public RegDocDtoRequest(String dateStart, String dateEnd, WeekSchedule weekSchedule, int duration) {
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.weekSchedule = weekSchedule;
+        this.duration = duration;
+    }
 
+    public RegDocDtoRequest(String dateStart, String dateEnd, List<WeekDaysSchedule> weekDaysSchedules, int duration) {
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.weekDaysSchedules = weekDaysSchedules;
+        this.duration = duration;
+    }
 
     public RegDocDtoRequest(String firstName, String lastName, String patronymic, String login, String password, String speciality, String room, String dateStart, String dateEnd, int duration) {
         super(firstName, lastName, patronymic, login, password);
@@ -48,51 +60,6 @@ public class RegDocDtoRequest extends RegUserDtoRequest {
 
     public RegDocDtoRequest() {
     }
-
-//    public RegDocDtoRequest(String regDocJson) {
-//        parse(regDocJson);
-//    }
-
-//    public void parse(String regDocJson) {
-//        JsonObject object = new JsonParser().parse(regDocJson).getAsJsonObject();
-//        firstName = object.get("firstName").getAsString();
-//        lastName = object.get("lastName").getAsString();
-//        patronymic = object.get("patronymic").getAsString();
-//        speciality = object.get("speciality").getAsString();
-//        room = object.get("room").getAsString();
-//        login = object.get("login").getAsString();
-//        password = object.get("password").getAsString();
-//        dateStart = object.get("dateStart").getAsString();
-//        dateEnd = object.get("dateEnd").getAsString();
-//
-//        if (object.has("weekSchedule")
-//                && object.get("weekSchedule").getAsJsonObject().size() != 0) {
-////            hasWeekSchedule = true;
-//            JsonObject weekSchedule = object.get("weekSchedule").getAsJsonObject();
-//            this.weekSchedule.setTimeStart(weekSchedule.get("timeStart").getAsString());
-//            this.weekSchedule.setTimeEnd(weekSchedule.get("timeEnd").getAsString());
-//            JsonArray array = weekSchedule.get("weekDays").getAsJsonArray();
-//            for (JsonElement e : array) {
-//                this.weekSchedule.getWeekDays().add(e.getAsString());
-//            }
-//        }
-//
-//        if (object.has("weekDaysSchedule")
-//                && object.get("weekDaysSchedule").getAsJsonArray().size() != 0) {
-////            hasWeekDaysSchedule = true;
-//            JsonArray weekDaysSchedule = object.get("weekDaysSchedule").getAsJsonArray();
-//            for (JsonElement daySchedule: weekDaysSchedule) {
-//                JsonObject obj = daySchedule.getAsJsonObject();
-//                WeekDaysSchedule weekDaysSchedule1 = new WeekDaysSchedule();
-//                weekDaysSchedule1.setWeekDay(obj.get("weekDay").getAsString());
-//                weekDaysSchedule1.setTimeStart(obj.get("timeStart").getAsString());
-//                weekDaysSchedule1.setTimeEnd(obj.get("timeEnd").getAsString());
-//                weekDaysSchedules.add(weekDaysSchedule1);
-//            }
-//        }
-//        duration = object.get("duration").getAsInt();
-//
-//    }
 
     public String getSpeciality() {
         return speciality;

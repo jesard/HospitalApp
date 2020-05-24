@@ -7,6 +7,7 @@ public class RussianNameValidator implements ConstraintValidator<RussianName, St
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext ctx) {
+        if (s == null) return false;
         if (!s.matches("^[а-яА-ЯёЁ\\-\\s]+$")) {
             ctx.disableDefaultConstraintViolation();
             ctx.buildConstraintViolationWithTemplate(

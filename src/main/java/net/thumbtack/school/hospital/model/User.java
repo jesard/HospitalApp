@@ -3,8 +3,6 @@ package net.thumbtack.school.hospital.model;
 import net.thumbtack.school.hospital.validation.Login;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.Objects;
 
 public class User {
