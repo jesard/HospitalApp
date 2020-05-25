@@ -55,7 +55,7 @@ public class StatisticsService extends UserService {
             throw new ServerException(new MyError(ServerErrorCode.WRONG_USER, Field.COOKIE));
         }
         List<Integer> doctorIds;
-        if (speciality != null) {
+        if (speciality != null && speciality.length() > 0) {
             doctorIds = doctorDao.getAllDoctorIdsBySpeciality(speciality);
         } else {
             doctorIds = doctorDao.getAllDoctorIds();

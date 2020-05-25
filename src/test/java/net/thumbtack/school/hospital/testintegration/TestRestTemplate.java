@@ -1,13 +1,15 @@
-package net.thumbtack.school.hospital;
+package net.thumbtack.school.hospital.testintegration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.thumbtack.school.hospital.TestBase;
 import net.thumbtack.school.hospital.dto.request.LoginDtoRequest;
 import net.thumbtack.school.hospital.dto.request.MakeAppointmentDtoRequest;
 import net.thumbtack.school.hospital.dto.request.RegCommissionDtoRequest;
 import net.thumbtack.school.hospital.dto.request.RegPatientDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.RegDocDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekSchedule;
+import net.thumbtack.school.hospital.dto.response.GetSettingsDtoResponse;
 import net.thumbtack.school.hospital.dto.response.RegPatientDtoResponse;
 import net.thumbtack.school.hospital.dto.response.regdoctor.RegDoctorDtoResponse;
 import net.thumbtack.school.hospital.model.Admin;
@@ -33,18 +35,19 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class TestRestTemplate extends TestBase {
 
-    private static RestTemplate template = new RestTemplate();
+    protected static RestTemplate template = new RestTemplate();
 
     @Autowired
-    private ObjectMapper mapper;
+    protected ObjectMapper mapper;
 
-    private final String BASEURL = "http://localhost:8080/api";
+    protected final String BASEURL = "http://localhost:8080/api";
 
     @BeforeAll()
     public static void addConverter() {
@@ -63,7 +66,7 @@ public class TestRestTemplate extends TestBase {
         return set_cookie != null ? set_cookie.replace("JAVASESSIONID=", "") : null;
     }
 
-    private String loginSuperAdmin() throws JsonProcessingException {
+    protected String loginSuperAdmin() throws JsonProcessingException {
         LoginDtoRequest loginDtoRequest = new LoginDtoRequest("admin", "qwerty");
         HttpHeaders headers1 = new HttpHeaders();
         headers1.setContentType(MediaType.APPLICATION_JSON);
@@ -230,7 +233,39 @@ public class TestRestTemplate extends TestBase {
     }
 
     @Test
-    public void testComplexScenario() {}
+    public void testGetSettings() {
+        HttpEntity<String> request = new HttpEntity<>("");
+        ResponseEntity<GetSettingsDtoResponse> response = template.exchange(BASEURL + "/settings", HttpMethod.GET, request, GetSettingsDtoResponse.class);
+        assertTrue(response.getBody().getMaxNameLength() > 0);
+        assertTrue(response.getBody().getMinPasswordLength() > 0);
+    }
+
+    @Test
+    public void testComplexScenario() throws JsonProcessingException {
+        Doctor doctor1 = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
+        Doctor doctor2 = new Doctor("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111");
+        Patient patient1 = new Patient("Василий","Первый", "Иванович", "fvdfvde", "frfrfersf", "efdef@wefwe.ru", "faffasf", "+79845447788");
+        Patient patient2 = new Patient("Иван","Второй", "Михайлович", "vevrev", "eerervervre", "erf@wefwe.ru", "eerferf", "+79912343322");
+        Patient patient3 = new Patient("Евгений", "Третий", "Валерьевич", "erkfreew", "fwfwe23fw", "ferfe@wewe.ww", "wefwefwef", "+79911235522");
+        RegPatientDtoResponse responsePatient1 = regPatient(patient1);
+        RegPatientDtoResponse responsePatient2 = regPatient(patient2);
+        RegPatientDtoResponse responsePatient3 = regPatient(patient3);
+        RegDoctorDtoResponse responseDoc1 = regDoctor(doctor1);
+        RegDoctorDtoResponse responseDoc2 = regDoctor(doctor2);
+        int docId1 = responseDoc1.getId();
+        int docId2 = responseDoc2.getId();
+        int patientId1 = responsePatient1.getId();
+        int patientId2 = responsePatient2.getId();
+        int patientId3 = responsePatient3.getId();
+        String patientToken1 = login(patient1.getLogin(), patient1.getPassword());
+        String patientToken2 = login(patient2.getLogin(), patient2.getPassword());
+        String patientToken3 = login(patient3.getLogin(), patient3.getPassword());
+        String doctorToken1 = login(doctor1.getLogin(), doctor1.getPassword());
+        String doctorToken2 = login(doctor2.getLogin(), doctor2.getPassword());
+
+
+
+    }
 
 
 }

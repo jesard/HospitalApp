@@ -83,7 +83,6 @@ public class TestPatientDao extends TestBase {
         assertThrows(ServerException.class, ()-> patientDao.makeAppointment(patient2.getId(), slotId, ticketNumber2));
     }
 
-
     @Test
     public void testDeleteTicket() throws ServerException {
         Doctor doctor = insertDoctorWithSchedule1();

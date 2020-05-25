@@ -6,10 +6,7 @@ import net.thumbtack.school.hospital.dto.request.MakeAppointmentDtoRequest;
 import net.thumbtack.school.hospital.dto.request.RegCommissionDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.RegDocDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekSchedule;
-import net.thumbtack.school.hospital.dto.response.GetTicketsDtoResponse;
-import net.thumbtack.school.hospital.dto.response.RegCommissionDtoResponse;
-import net.thumbtack.school.hospital.dto.response.RegPatientDtoResponse;
-import net.thumbtack.school.hospital.dto.response.RegUserDtoResponse;
+import net.thumbtack.school.hospital.dto.response.*;
 import net.thumbtack.school.hospital.dto.response.regdoctor.DayScheduleDtoResponse;
 import net.thumbtack.school.hospital.dto.response.regdoctor.RegDoctorDtoResponse;
 import net.thumbtack.school.hospital.error.ServerErrorCode;
@@ -216,6 +213,7 @@ public class TestDoctorService extends TestServiceBase {
             assertEquals(ServerErrorCode.WRONG_DATE, ex.getErrors().get(0).getErrorCode());
         }
     }
+
 
 
 }

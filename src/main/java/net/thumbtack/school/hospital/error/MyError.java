@@ -40,11 +40,11 @@ public class MyError {
             case "Login": return ServerErrorCode.INVALID_LOGIN;
             case "MaxNameLength": return ServerErrorCode.MAX_NAME_LENGTH;
             case "PasswordMinLength": return ServerErrorCode.PASSWORD_MIN_LENGTH;
-            case "Date": return ServerErrorCode.WRONG_DATE;
-            case "Time": return ServerErrorCode.WRONG_TIME;
+            case "Date": return ServerErrorCode.INVALID_DATE;
+            case "Time": return ServerErrorCode.INVALID_TIME;
             case "WeekDay":
             case "WeekDays":
-                return ServerErrorCode.WRONG_DAY_OF_WEEK;
+                return ServerErrorCode.INVALID_DAY_OF_WEEK;
             case "OneNotNull": return ServerErrorCode.ONE_NOT_NULL;
             case "MobilePhone": return ServerErrorCode.INVALID_MOBILE_PHONE;
             case "NotEmpty": return ServerErrorCode.EMPTY_VALUE;

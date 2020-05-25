@@ -1,12 +1,16 @@
 package net.thumbtack.school.hospital.testservice;
 
 import net.thumbtack.school.hospital.TestBase;
-import net.thumbtack.school.hospital.dto.request.*;
+import net.thumbtack.school.hospital.dto.request.LoginDtoRequest;
+import net.thumbtack.school.hospital.dto.request.MakeAppointmentDtoRequest;
+import net.thumbtack.school.hospital.dto.request.RegAdminDtoRequest;
+import net.thumbtack.school.hospital.dto.request.RegPatientDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.RegDocDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekSchedule;
-import net.thumbtack.school.hospital.dto.response.*;
+import net.thumbtack.school.hospital.dto.response.MakeAppointmentDtoResponse;
+import net.thumbtack.school.hospital.dto.response.RegAdminDtoResponse;
+import net.thumbtack.school.hospital.dto.response.RegPatientDtoResponse;
 import net.thumbtack.school.hospital.dto.response.regdoctor.RegDoctorDtoResponse;
-import net.thumbtack.school.hospital.dto.response.regdoctor.TicketDtoResponse;
 import net.thumbtack.school.hospital.error.ServerErrorCode;
 import net.thumbtack.school.hospital.error.ServerException;
 import net.thumbtack.school.hospital.model.Admin;
@@ -14,8 +18,8 @@ import net.thumbtack.school.hospital.model.Doctor;
 import net.thumbtack.school.hospital.model.Patient;
 import net.thumbtack.school.hospital.model.User;
 import net.thumbtack.school.hospital.service.*;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -33,6 +37,7 @@ public class TestServiceBase extends TestBase {
     protected PatientService patientService = new PatientService();
     protected UserService userService = new UserService();
     protected ScheduledService scheduledService = new ScheduledService();
+    protected StatisticsService statisticsService = new StatisticsService();
 
     protected RegDoctorDtoResponse insertDoctor1(String token) throws ServerException {
 
@@ -47,7 +52,7 @@ public class TestServiceBase extends TestBase {
     }
 
     protected RegDoctorDtoResponse insertDoctor2(String token) throws ServerException {
-        RegDocDtoRequest regDocRequest = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "15-06-2020", "18-07-2020", 15);
+        RegDocDtoRequest regDocRequest = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "therapist", "302a", "15-06-2020", "18-07-2020", 15);
         List<String> weekDays = new ArrayList<>();
         weekDays.add("Mon");
         WeekSchedule weekSchedule = new WeekSchedule("14:00", "17:00", weekDays);
@@ -74,6 +79,29 @@ public class TestServiceBase extends TestBase {
     protected MakeAppointmentDtoResponse makeAppointment(String speciality, String date, String time, String patientToken) throws ServerException {
         MakeAppointmentDtoRequest makeAppointmentDtoRequest = new MakeAppointmentDtoRequest(0, speciality, date,time);
         return patientService.makeAppointment(makeAppointmentDtoRequest, patientToken);
+    }
+
+    @Test
+    public void testUserPermissions() throws ServerException {
+        insertPatientByService1();
+        LoginDtoRequest loginPatient = new LoginDtoRequest("faffasf", "fefefefefefef");
+        String tokenPatient = userService.login(loginPatient);
+        try {
+            insertDoctor1(tokenPatient);
+        } catch (ServerException ex) {
+            assertEquals(ServerErrorCode.WRONG_USER, ex.getErrors().get(0).getErrorCode());
+        }
+
+        LoginDtoRequest loginAdmin = new LoginDtoRequest("admin", "qwerty");
+        String tokenAdmin = userService.login(loginAdmin);
+
+        MakeAppointmentDtoRequest requestApp = new MakeAppointmentDtoRequest(0, "surgeon", "08-06-2020", "09:00");
+
+        try {
+            patientService.makeAppointment(requestApp, tokenAdmin);
+        } catch (ServerException ex) {
+            assertEquals(ServerErrorCode.WRONG_USER, ex.getErrors().get(0).getErrorCode());
+        }
     }
 
     @Test
@@ -186,11 +214,7 @@ public class TestServiceBase extends TestBase {
         assertNotNull(((Doctor) userDoc).getSpeciality());
     }
 
-    @Test
-    public void testGetSettings() {}
 
-    @Test
-    public void testGetStats() {}
 
 
 

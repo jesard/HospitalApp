@@ -10,6 +10,7 @@ public class MaxNameLengthValidator implements ConstraintValidator<MaxNameLength
     @Value("${max_name_length}")
     private int maxNameLength;
 
+
     @Override
     public boolean isValid(String s, ConstraintValidatorContext ctx) {
         if (s == null) return false;
