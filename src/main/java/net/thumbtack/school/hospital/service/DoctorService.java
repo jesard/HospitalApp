@@ -290,9 +290,11 @@ public class DoctorService extends UserService {
         doctorDao.setTerminationDate(doctorId, date);
         List<Slot> deletedTickets = doctorDao.deleteScheduleFromDate(doctorId, date);
         for (Slot slot: deletedTickets) {
-            String subject = "Ticket " + slot.getTicketNumber() + "at " + slot.getDaySchedule().getDate() + " " + slot.getTimeStart() + " was canceled";
+            String subject = "Ticket " + slot.getTicketNumber() + " at " + date + " was canceled";
             sendEmail(slot.getPatient().getAddress(), subject, subject);
             sendSMS(slot.getPatient().getPhone(), subject, subject);
+            patientDao.deleteTicket(slot.getTicketNumber());
+            doctorDao.deleteCommission(slot.getTicketNumber());
         }
         return new EmptyJsonResponse();
     }

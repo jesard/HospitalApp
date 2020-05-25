@@ -14,7 +14,7 @@ public class RegUserDtoRequest {
     @MaxNameLength
     private String lastName;
 
-    @RussianName
+    @Patronymic
     @MaxNameLength
     private String patronymic;
 

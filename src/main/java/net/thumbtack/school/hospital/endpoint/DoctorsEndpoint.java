@@ -42,7 +42,7 @@ public class DoctorsEndpoint {
     }
 
     @PutMapping(value = "/doctors/{doctorId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public RegDoctorDtoResponse updateDoctorSchedule(@RequestBody @Valid RegDocDtoRequest request,
+    public RegDoctorDtoResponse updateDoctorSchedule(@RequestBody RegDocDtoRequest request,
                                                      @PathVariable("doctorId") int doctorId,
                                                      @CookieValue(value = "JAVASESSIONID", defaultValue = "") String token) throws ServerException {
         return doctorService.updateDoctorSchedule(request, doctorId, token);
@@ -50,7 +50,7 @@ public class DoctorsEndpoint {
 
 
     @DeleteMapping(value = "/doctors/{doctorId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmptyJsonResponse deleteDoctor(@RequestBody DeleteDoctorDtoRequest request,
+    public EmptyJsonResponse deleteDoctor(@RequestBody @Valid DeleteDoctorDtoRequest request,
                                           @PathVariable("doctorId") int doctorId,
                                           @CookieValue(value = "JAVASESSIONID", defaultValue = "") String token) throws ServerException {
         return doctorService.deleteDoctor(request, doctorId, token);

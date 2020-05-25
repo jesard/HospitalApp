@@ -3,15 +3,12 @@ package net.thumbtack.school.hospital.testintegration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.thumbtack.school.hospital.TestBase;
-import net.thumbtack.school.hospital.dto.request.LoginDtoRequest;
-import net.thumbtack.school.hospital.dto.request.MakeAppointmentDtoRequest;
-import net.thumbtack.school.hospital.dto.request.RegCommissionDtoRequest;
-import net.thumbtack.school.hospital.dto.request.RegPatientDtoRequest;
+import net.thumbtack.school.hospital.dto.request.*;
 import net.thumbtack.school.hospital.dto.request.regdoctor.RegDocDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekSchedule;
-import net.thumbtack.school.hospital.dto.response.GetSettingsDtoResponse;
-import net.thumbtack.school.hospital.dto.response.RegPatientDtoResponse;
+import net.thumbtack.school.hospital.dto.response.*;
 import net.thumbtack.school.hospital.dto.response.regdoctor.RegDoctorDtoResponse;
+import net.thumbtack.school.hospital.error.ServerException;
 import net.thumbtack.school.hospital.model.Admin;
 import net.thumbtack.school.hospital.model.Doctor;
 import net.thumbtack.school.hospital.model.Patient;
@@ -102,23 +99,23 @@ public class TestRestTemplate extends TestBase {
         return response.getBody();
     }
 
-    private String makeAppointment(int docId1, String speciality, String date, String time, String token) throws JsonProcessingException {
+    private MakeAppointmentDtoResponse makeAppointment(int docId1, String speciality, String date, String time, String token) throws JsonProcessingException {
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         MakeAppointmentDtoRequest dto = new MakeAppointmentDtoRequest(docId1, speciality, date, time);
         HttpEntity<String> makeAppReq = new HttpEntity<>(mapper.writeValueAsString(dto), requestHeaders);
-        ResponseEntity<String> response = template.exchange(BASEURL + "/tickets", HttpMethod.POST, makeAppReq, String.class);
+        ResponseEntity<MakeAppointmentDtoResponse> response = template.exchange(BASEURL + "/tickets", HttpMethod.POST, makeAppReq, MakeAppointmentDtoResponse.class);
         return response.getBody();
     }
 
-    private String regCommission(int patientId1, List<Integer> docIds, String room, String date, String time, int duration, String token) throws JsonProcessingException {
+    private RegCommissionDtoResponse regCommission(int patientId1, List<Integer> docIds, String room, String date, String time, int duration, String token) throws JsonProcessingException {
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         RegCommissionDtoRequest regCommissionDto = new RegCommissionDtoRequest(patientId1, docIds, room, date, time, duration);
         HttpEntity<String> regCommissionReq = new HttpEntity<>(mapper.writeValueAsString(regCommissionDto), requestHeaders);
-        return template.exchange(BASEURL + "/commissions", HttpMethod.POST, regCommissionReq, String.class).getBody();
+        return template.exchange(BASEURL + "/commissions", HttpMethod.POST, regCommissionReq, RegCommissionDtoResponse.class).getBody();
     }
 
 
@@ -168,7 +165,7 @@ public class TestRestTemplate extends TestBase {
 
         String appDate = responseDoc1.getSchedule().get(0).getDate();
         String appTime = responseDoc1.getSchedule().get(0).getDaySchedule().get(0).getTime();
-        String makeAppResponse = makeAppointment(docId1, "", appDate, appTime, patientToken1);
+        MakeAppointmentDtoResponse makeAppResponse = makeAppointment(docId1, "", appDate, appTime, patientToken1);
         assertNotNull(makeAppResponse);
 
         //doctor busy by another patient for appoint
@@ -217,9 +214,9 @@ public class TestRestTemplate extends TestBase {
         String time = responseDoc1.getSchedule().get(0).getDaySchedule().get(0).getTime();
 
         List<Integer> docIds = Collections.singletonList(docId2);
-        String regCommissionResponse = regCommission(patientId1, docIds, doctor1.getRoom(), date, time, 40, doctorToken1);
-        assertTrue(regCommissionResponse.contains("\"patientId\":" + patientId1));
-        assertTrue(regCommissionResponse.contains(String.valueOf(docId1)));
+        RegCommissionDtoResponse regCommissionResponse = regCommission(patientId1, docIds, doctor1.getRoom(), date, time, 40, doctorToken1);
+        assertEquals(regCommissionResponse.getPatientId(), patientId1);
+        assertTrue(regCommissionResponse.getDoctorIds().contains(docId1));
 
         try {
             makeAppointment(0, "surgeon", date, time, patientToken2);
@@ -246,7 +243,7 @@ public class TestRestTemplate extends TestBase {
         Doctor doctor2 = new Doctor("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111");
         Patient patient1 = new Patient("Василий","Первый", "Иванович", "fvdfvde", "frfrfersf", "efdef@wefwe.ru", "faffasf", "+79845447788");
         Patient patient2 = new Patient("Иван","Второй", "Михайлович", "vevrev", "eerervervre", "erf@wefwe.ru", "eerferf", "+79912343322");
-        Patient patient3 = new Patient("Евгений", "Третий", "Валерьевич", "erkfreew", "fwfwe23fw", "ferfe@wewe.ww", "wefwefwef", "+79911235522");
+        Patient patient3 = new Patient("Евгений", "Третий", "", "erkfreew", "fwfwe23fw", "ferfe@wewe.ww", "wefwefwef", "+79911235522");
         RegPatientDtoResponse responsePatient1 = regPatient(patient1);
         RegPatientDtoResponse responsePatient2 = regPatient(patient2);
         RegPatientDtoResponse responsePatient3 = regPatient(patient3);
@@ -263,8 +260,82 @@ public class TestRestTemplate extends TestBase {
         String doctorToken1 = login(doctor1.getLogin(), doctor1.getPassword());
         String doctorToken2 = login(doctor2.getLogin(), doctor2.getPassword());
 
+        // appointment patient 1 to Doc 1 slot 1
+        String appDate1 = responseDoc1.getSchedule().get(0).getDate();
+        String appTime1 = responseDoc1.getSchedule().get(0).getDaySchedule().get(0).getTime();
+        MakeAppointmentDtoResponse makeAppResponse1 = makeAppointment(docId1, "", appDate1, appTime1, patientToken1);
+        // appointment patient 2 to Doc 2 slot 2
+        String appDate2 = responseDoc2.getSchedule().get(1).getDate();
+        String appTime2 = responseDoc2.getSchedule().get(1).getDaySchedule().get(1).getTime();
+        MakeAppointmentDtoResponse makeAppResponse2 = makeAppointment(docId2, "", appDate2, appTime2, patientToken2);
+        // appointment patient 3 to Doc 1 slot 3
+        String appDate3 = responseDoc1.getSchedule().get(1).getDate();
+        String appTime3 = responseDoc1.getSchedule().get(1).getDaySchedule().get(0).getTime();
+        MakeAppointmentDtoResponse makeAppResponse3 = makeAppointment(docId1, "", appDate3, appTime3, patientToken3);
+        // cancel appointment slot 1
+        String ticketNumber1 = makeAppResponse1.getTicket();
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("Cookie", "JAVASESSIONID=" + patientToken1);
+        HttpEntity<String> delTicket3Req = new HttpEntity<>(requestHeaders);
+        template.exchange(BASEURL + "/tickets/" + ticketNumber1, HttpMethod.DELETE, delTicket3Req, EmptyJsonResponse.class);
+        // make commission pat 2 with Docs 1,2 slot 1
+        RegCommissionDtoResponse commissionDtoResponse = regCommission(patientId2, Arrays.asList(docId1, docId2), doctor1.getRoom(), appDate1, appTime1, 40, doctorToken1);
+        // appointment patient 2 to Doc 2 slot 1 //should fail
+        try {
+            makeAppointment(docId2, "", appDate1, appTime1, patientToken1);
+            fail();
+        } catch (HttpStatusCodeException ex) {
+            assertTrue(ex.getResponseBodyAsString().contains("SLOT_IS_BUSY"));
+        }
+        // delete Doc 2
+        String tokenAdmin = loginSuperAdmin();
+        HttpHeaders headersDelDoc = new HttpHeaders();
+        headersDelDoc.setContentType(MediaType.APPLICATION_JSON);
+        headersDelDoc.add("Cookie", "JAVASESSIONID=" + tokenAdmin);
+        DeleteDoctorDtoRequest deleteDoctorDto = new DeleteDoctorDtoRequest("06-07-2020");
+        HttpEntity<String> delDoctor2Req = new HttpEntity<>(mapper.writeValueAsString(deleteDoctorDto), headersDelDoc);
+        template.exchange(BASEURL + "/doctors/" + docId2, HttpMethod.DELETE, delDoctor2Req, String.class).getBody();
+        // update schedule Doc 1
+        List<String> weekDays = new ArrayList<>();
+        weekDays.add("Tue");
+        String newSlotStart = "17:00";
+        String newSlotEnd = "19:00";
+        WeekSchedule weekSchedule = new WeekSchedule(newSlotStart, newSlotEnd, weekDays);
+        String newScheduleStart = "20-07-2020";
+        String newScheduleEnd = "20-08-2020";
+        RegDocDtoRequest newScheduleDto = new RegDocDtoRequest(newScheduleStart, newScheduleEnd, weekSchedule, 20);
+        HttpHeaders headers3 = new HttpHeaders();
+        headers3.setContentType(MediaType.APPLICATION_JSON);
+        headers3.add("Cookie", "JAVASESSIONID=" + tokenAdmin);
+        HttpEntity<String> newScheduleHttp = new HttpEntity<>(mapper.writeValueAsString(newScheduleDto), headers3);
+        RegDoctorDtoResponse newScheduleResponse = template.exchange(BASEURL + "/doctors/" + docId1, HttpMethod.PUT, newScheduleHttp, RegDoctorDtoResponse.class).getBody();
+        // appointment patient 3 to Doc 1 slot 1 (old schedule)
+        MakeAppointmentDtoResponse makeAppResponse4 = makeAppointment(docId1, "", appDate1, appTime1, patientToken3);
+        // appointment patient 2 to Doc 1 slot 3 (old schedule) // should fail
+        try {
+            makeAppointment(docId1, "", appDate3, appTime3, patientToken2);
+            fail();
+        } catch (HttpStatusCodeException ex) {
+            assertTrue(ex.getResponseBodyAsString().contains("SLOT_IS_BUSY"));
+        }
+        // appointment patient 1 to Doc 1 slot 4 (new schedule)
+        String appDate4newSchedule = newScheduleResponse.getSchedule().get(newScheduleResponse.getSchedule().size() - 5).getDate();
+        MakeAppointmentDtoResponse makeAppResponse5 = makeAppointment(docId1, "", appDate4newSchedule, newSlotStart, patientToken1);
 
+        assertNotNull(makeAppResponse5);
 
+        HttpHeaders headersTickets3 = new HttpHeaders();
+        headersTickets3.add("Cookie", "JAVASESSIONID=" + patientToken3);
+        HttpEntity<String> httpTicketsPatient3 = new HttpEntity<>(headersTickets3);
+        GetTicketsDtoResponse ticketsPatient3 = template.exchange(BASEURL + "/tickets", HttpMethod.GET, httpTicketsPatient3, GetTicketsDtoResponse.class).getBody();
+
+        HttpHeaders headersTickets1 = new HttpHeaders();
+        headersTickets1.add("Cookie", "JAVASESSIONID=" + patientToken1);
+        HttpEntity<String> httpTicketsPatient1 = new HttpEntity<>(headersTickets1);
+        GetTicketsDtoResponse ticketsPatient1 = template.exchange(BASEURL + "/tickets", HttpMethod.GET, httpTicketsPatient1, GetTicketsDtoResponse.class).getBody();
+
+        assertEquals(2, ticketsPatient3.getTickets().size());
+        assertEquals(1, ticketsPatient1.getTickets().size());
     }
 
 
