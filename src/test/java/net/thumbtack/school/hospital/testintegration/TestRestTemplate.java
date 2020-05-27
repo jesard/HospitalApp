@@ -8,10 +8,6 @@ import net.thumbtack.school.hospital.dto.request.regdoctor.RegDocDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekSchedule;
 import net.thumbtack.school.hospital.dto.response.*;
 import net.thumbtack.school.hospital.dto.response.regdoctor.RegDoctorDtoResponse;
-import net.thumbtack.school.hospital.error.ServerException;
-import net.thumbtack.school.hospital.model.Admin;
-import net.thumbtack.school.hospital.model.Doctor;
-import net.thumbtack.school.hospital.model.Patient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -74,23 +70,22 @@ public class TestRestTemplate extends TestBase {
         return set_cookie != null ? set_cookie.replace("JAVASESSIONID=", "") : null;
     }
 
-    private RegDoctorDtoResponse regDoctor(Doctor doctor) throws JsonProcessingException {
+    private RegDoctorDtoResponse regDoctor(RegDocDtoRequest doctor) throws JsonProcessingException {
         String token = loginSuperAdmin();
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        RegDocDtoRequest dto = new RegDocDtoRequest(doctor.getFirstName(), doctor.getLastName(), doctor.getPatronymic(), doctor.getLogin(), doctor.getPassword(), doctor.getSpeciality(), doctor.getRoom(), "05-07-2020", "05-08-2020", 20);
         List<String> weekDays = new ArrayList<>();
         weekDays.add("Mon");
         WeekSchedule weekSchedule = new WeekSchedule("14:00", "17:00", weekDays);
-        dto.setWeekSchedule(weekSchedule);
-        HttpEntity<String> regDocRequest = new HttpEntity<>(mapper.writeValueAsString(dto), requestHeaders);
+        doctor.setWeekSchedule(weekSchedule);
+        HttpEntity<String> regDocRequest = new HttpEntity<>(mapper.writeValueAsString(doctor), requestHeaders);
         ResponseEntity<RegDoctorDtoResponse> response2 = template.exchange(BASEURL + "/doctors", HttpMethod.POST, regDocRequest, RegDoctorDtoResponse.class);
         return response2.getBody();
     }
 
-    private RegPatientDtoResponse regPatient(Patient patient) throws JsonProcessingException {
+    private RegPatientDtoResponse regPatient(RegPatientDtoRequest patient) throws JsonProcessingException {
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         RegPatientDtoRequest regPatientDto = new RegPatientDtoRequest(patient.getFirstName(),patient.getLastName(), patient.getPatronymic(), patient.getEmail(), patient.getAddress(), patient.getPhone(), patient.getLogin(), patient.getPassword());
@@ -126,8 +121,8 @@ public class TestRestTemplate extends TestBase {
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
         HttpEntity<String> requestAdmin = new HttpEntity<>(null, requestHeaders);
-        ResponseEntity<Admin> response2 = template.exchange(BASEURL + "/account", HttpMethod.GET, requestAdmin, Admin.class);
-        Admin admin = response2.getBody();
+        ResponseEntity<RegAdminDtoResponse> response2 = template.exchange(BASEURL + "/account", HttpMethod.GET, requestAdmin, RegAdminDtoResponse.class);
+        RegAdminDtoResponse admin = response2.getBody();
 
         if (admin != null) {
             assertEquals("superadmin", admin.getPosition());
@@ -136,7 +131,7 @@ public class TestRestTemplate extends TestBase {
 
     @Test
     public void testRegisterDoctor() throws JsonProcessingException {
-        Doctor doctor = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
+        RegDocDtoRequest doctor = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a","05-07-2020", "05-08-2020", 20);
         RegDoctorDtoResponse response = regDoctor(doctor);
         Assertions.assertNotNull(response);
         assertEquals("Веретенников", response.getLastName());
@@ -144,10 +139,10 @@ public class TestRestTemplate extends TestBase {
 
     @Test
     public void testDoctorBusyByAppointment() throws JsonProcessingException {
-        Doctor doctor1 = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
-        Doctor doctor2 = new Doctor("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111");
-        Patient patient1 = new Patient("Василий","Мураев", "Иванович", "fvdfvde", "frfrfersf", "efdef@wefwe.ru", "faffasf", "+79845447788");
-        Patient patient2 = new Patient("Иван","Лапшин", "Михайлович", "vevrev", "eerervervre", "erf@wefwe.ru", "eerferf", "+79912343322");
+        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-07-2020", "05-08-2020", 20);
+        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", "05-07-2020", "05-08-2020", 20);
+        RegPatientDtoRequest patient1 = new RegPatientDtoRequest("Василий","Первый", "Иванович", "efdef@wefwe.ru", "frfrfersf", "+79845447788", "faffasf", "fvdfvdesdf");
+        RegPatientDtoRequest patient2 = new RegPatientDtoRequest("Иван","Второй", "Михайлович", "erf@wefwe.ru", "eerervervre", "+79912343322", "eerferf", "evkmervlke");
         RegPatientDtoResponse responsePatient1 = regPatient(patient1);
         RegPatientDtoResponse responsePatient2 = regPatient(patient2);
         RegDoctorDtoResponse responseDoc1 = regDoctor(doctor1);
@@ -191,10 +186,10 @@ public class TestRestTemplate extends TestBase {
 
     @Test
     public void testDoctorBusyByCommission() throws JsonProcessingException {
-        Doctor doctor1 = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
-        Doctor doctor2 = new Doctor("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111");
-        Patient patient1 = new Patient("Василий","Мураев", "Иванович", "fvdfvde", "frfrfersf", "efdef@wefwe.ru", "faffasf", "+79845447788");
-        Patient patient2 = new Patient("Иван","Лапшин", "Михайлович", "vevrev", "eerervervre", "erf@wefwe.ru", "eerferf", "+79912343322");
+        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-07-2020", "05-08-2020", 20);
+        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", "05-07-2020", "05-08-2020", 20);
+        RegPatientDtoRequest patient1 = new RegPatientDtoRequest("Василий","Первый", "Иванович", "efdef@wefwe.ru", "frfrfersf", "+79845447788", "faffasf", "fvdfvdesdf");
+        RegPatientDtoRequest patient2 = new RegPatientDtoRequest("Иван","Второй", "Михайлович", "erf@wefwe.ru", "eerervervre", "+79912343322", "eerferf", "evkmervlke");
         RegPatientDtoResponse responsePatient1 = regPatient(patient1);
         RegPatientDtoResponse responsePatient2 = regPatient(patient2);
         RegDoctorDtoResponse responseDoc1 = regDoctor(doctor1);
@@ -239,11 +234,12 @@ public class TestRestTemplate extends TestBase {
 
     @Test
     public void testComplexScenario() throws JsonProcessingException {
-        Doctor doctor1 = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
-        Doctor doctor2 = new Doctor("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111");
-        Patient patient1 = new Patient("Василий","Первый", "Иванович", "fvdfvde", "frfrfersf", "efdef@wefwe.ru", "faffasf", "+79845447788");
-        Patient patient2 = new Patient("Иван","Второй", "Михайлович", "vevrev", "eerervervre", "erf@wefwe.ru", "eerferf", "+79912343322");
-        Patient patient3 = new Patient("Евгений", "Третий", "", "erkfreew", "fwfwe23fw", "ferfe@wewe.ww", "wefwefwef", "+79911235522");
+
+        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-07-2020", "05-08-2020", 20);
+        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", "05-07-2020", "05-08-2020", 20);
+        RegPatientDtoRequest patient1 = new RegPatientDtoRequest("Василий","Первый", "Иванович", "efdef@wefwe.ru", "frfrfersf", "+79845447788", "faffasf", "fvdfvdesdf");
+        RegPatientDtoRequest patient2 = new RegPatientDtoRequest("Иван","Второй", "Михайлович", "erf@wefwe.ru", "eerervervre", "+79912343322", "eerferf", "evkmervlke");
+        RegPatientDtoRequest patient3 = new RegPatientDtoRequest("Евгений", "Третий", "", "ferfe@wewe.ww", "fwfwe23fw", "+79911235522", "wefwefwef", "erkfreew");
         RegPatientDtoResponse responsePatient1 = regPatient(patient1);
         RegPatientDtoResponse responsePatient2 = regPatient(patient2);
         RegPatientDtoResponse responsePatient3 = regPatient(patient3);

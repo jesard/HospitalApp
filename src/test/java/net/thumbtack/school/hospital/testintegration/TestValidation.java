@@ -6,9 +6,6 @@ import net.thumbtack.school.hospital.dto.request.RegPatientDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.RegDocDtoRequest;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekDaysSchedule;
 import net.thumbtack.school.hospital.dto.request.regdoctor.WeekSchedule;
-import net.thumbtack.school.hospital.model.Admin;
-import net.thumbtack.school.hospital.model.Doctor;
-import net.thumbtack.school.hospital.model.Patient;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,46 +30,29 @@ public class TestValidation extends TestRestTemplate {
     private int minPasswordLength;
 
 
-    private void regAdminInvalidParams(Admin admin) throws JsonProcessingException {
+    private void regAdminInvalidParams(RegAdminDtoRequest admin) throws JsonProcessingException {
         String token = loginSuperAdmin();
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        RegAdminDtoRequest regAdminDto = new RegAdminDtoRequest(admin.getFirstName(), admin.getLastName(), admin.getPatronymic(), admin.getPosition(), admin.getLogin(), admin.getPassword());
-        HttpEntity<String> regAdminHttp = new HttpEntity<>(mapper.writeValueAsString(regAdminDto), requestHeaders);
+        HttpEntity<String> regAdminHttp = new HttpEntity<>(mapper.writeValueAsString(admin), requestHeaders);
         template.exchange(BASEURL + "/admins", HttpMethod.POST, regAdminHttp, String.class);
     }
 
-    private void regDocInvalidParams(Doctor doctor, WeekSchedule weekSchedule, String dateStart, String dateEnd, int duration) throws JsonProcessingException {
+    private void regDocInvalidParams(RegDocDtoRequest doctor) throws JsonProcessingException {
         String token = loginSuperAdmin();
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        RegDocDtoRequest dto = new RegDocDtoRequest(doctor.getFirstName(), doctor.getLastName(), doctor.getPatronymic(), doctor.getLogin(), doctor.getPassword(), doctor.getSpeciality(), doctor.getRoom(), dateStart, dateEnd, duration);
-        dto.setWeekSchedule(weekSchedule);
-        HttpEntity<String> regDocRequest = new HttpEntity<>(mapper.writeValueAsString(dto), requestHeaders);
+        HttpEntity<String> regDocRequest = new HttpEntity<>(mapper.writeValueAsString(doctor), requestHeaders);
         template.exchange(BASEURL + "/doctors", HttpMethod.POST, regDocRequest, String.class);
     }
 
-    private void regDocInvalidParams(Doctor doctor, WeekSchedule weekSchedule, List<WeekDaysSchedule> weekDaysSchedules, String dateStart, String dateEnd, int duration) throws JsonProcessingException {
-        String token = loginSuperAdmin();
-
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        RegDocDtoRequest dto = new RegDocDtoRequest(doctor.getFirstName(), doctor.getLastName(), doctor.getPatronymic(), doctor.getLogin(), doctor.getPassword(), doctor.getSpeciality(), doctor.getRoom(), dateStart, dateEnd, duration);
-        dto.setWeekSchedule(weekSchedule);
-        dto.setWeekDaysSchedules(weekDaysSchedules);
-        HttpEntity<String> regDocRequest = new HttpEntity<>(mapper.writeValueAsString(dto), requestHeaders);
-        template.exchange(BASEURL + "/doctors", HttpMethod.POST, regDocRequest, String.class);
-    }
-
-    private void regPatientInvalidParams(Patient patient) throws JsonProcessingException {
+    private void regPatientInvalidParams(RegPatientDtoRequest patient) throws JsonProcessingException {
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        RegPatientDtoRequest regPatientDto = new RegPatientDtoRequest(patient.getFirstName(), patient.getLastName(), patient.getPatronymic(), patient.getEmail(), patient.getAddress(), patient.getPhone(), patient.getLogin(), patient.getPassword());
-        HttpEntity<String> regAdminHttp = new HttpEntity<>(mapper.writeValueAsString(regPatientDto), requestHeaders);
+        HttpEntity<String> regAdminHttp = new HttpEntity<>(mapper.writeValueAsString(patient), requestHeaders);
         template.exchange(BASEURL + "/patients", HttpMethod.POST, regAdminHttp, String.class);
     }
 
@@ -80,7 +60,6 @@ public class TestValidation extends TestRestTemplate {
     @Test
     public void testInvalidJson() throws JsonProcessingException {
         String token = loginSuperAdmin();
-        Admin admin = new Admin("Иван", "Иванов", "Иванович", "", "qwerty", "junior admin");
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Cookie", "JAVASESSIONID=" + token);
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -107,7 +86,7 @@ public class TestValidation extends TestRestTemplate {
     @ParameterizedTest
     @MethodSource("loginParams")
     public void testInvalidLogin(String login) throws JsonProcessingException {
-        Admin admin = new Admin("Иван", "Иванов", "Иванович", "", "qwerty", "junior admin");
+        RegAdminDtoRequest admin = new RegAdminDtoRequest("Иван", "Иванов", "Иванович", "", "qwerty", "junior admin");
         admin.setLogin(login);
         try {
             regAdminInvalidParams(admin);
@@ -140,7 +119,7 @@ public class TestValidation extends TestRestTemplate {
     @ParameterizedTest
     @MethodSource("russianNameParams")
     public void testInvalidRussianName(String name) throws JsonProcessingException {
-        Admin admin = new Admin("Иван", "Иванов", "Иванович", "hhhhwwe", "qwerty", "junior admin");
+        RegAdminDtoRequest admin = new RegAdminDtoRequest("Иван", "Иванов", "Иванович", "hhhhwwe", "qwerty", "junior admin");
         admin.setFirstName(name);
         try {
             regAdminInvalidParams(admin);
@@ -155,7 +134,7 @@ public class TestValidation extends TestRestTemplate {
 
     @Test
     public void testMaxNameLength() throws JsonProcessingException {
-        Admin admin = new Admin("Иван", "Иванов", "Иванович", "hhhhwwe", "qwerty", "junior admin");
+        RegAdminDtoRequest admin = new RegAdminDtoRequest("Иван", "Иванов", "Иванович", "hhhhwwe", "qwerty", "junior admin");
         admin.setPassword(RandomStringUtils.randomAlphabetic(maxNameLength + 1));
         try {
             regAdminInvalidParams(admin);
@@ -179,7 +158,7 @@ public class TestValidation extends TestRestTemplate {
     @ParameterizedTest
     @MethodSource("passwordParams")
     public void testPasswordMinLength(String password) throws JsonProcessingException {
-        Admin admin = new Admin("Иван", "Иванов", "Иванович", "hhhhwwe", "qwerty", "junior admin");
+        RegAdminDtoRequest admin = new RegAdminDtoRequest("Иван", "Иванов", "Иванович", "hhhhwwe", "qwerty", "junior admin");
         admin.setPassword(password);
         try {
             regAdminInvalidParams(admin);
@@ -194,14 +173,13 @@ public class TestValidation extends TestRestTemplate {
 
     @Test
     public void testInvalidDate() throws JsonProcessingException {
-        Doctor doctor = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
+        RegDocDtoRequest doctor = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "INVALID", "12-07-2020", 20);
         List<String> weekDays = new ArrayList<>();
         weekDays.add("Mon");
         WeekSchedule weekSchedule = new WeekSchedule("14:00", "17:00", weekDays);
-        String dateStart = "INVALID";
-        String dateEnd = "12-07-2020";
+        doctor.setWeekSchedule(weekSchedule);
         try {
-            regDocInvalidParams(doctor, weekSchedule, dateStart, dateEnd, 20);
+            regDocInvalidParams(doctor);
             fail();
         } catch (HttpStatusCodeException ex) {
             String responseString = ex.getResponseBodyAsString();
@@ -212,14 +190,13 @@ public class TestValidation extends TestRestTemplate {
 
     @Test
     public void testInvalidTime() throws JsonProcessingException {
-        Doctor doctor = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
+        RegDocDtoRequest doctor = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-05-2020","12-07-2020", 20);
         List<String> weekDays = new ArrayList<>();
         weekDays.add("Mon");
         WeekSchedule weekSchedule = new WeekSchedule("INVALID", "17:00", weekDays);
-        String dateStart = "05-05-2020";
-        String dateEnd = "12-07-2020";
+        doctor.setWeekSchedule(weekSchedule);
         try {
-            regDocInvalidParams(doctor, weekSchedule, dateStart, dateEnd, 20);
+            regDocInvalidParams(doctor);
             fail();
         } catch (HttpStatusCodeException ex) {
             String responseString = ex.getResponseBodyAsString();
@@ -230,14 +207,13 @@ public class TestValidation extends TestRestTemplate {
 
     @Test
     public void testInvalidWeekDay() throws JsonProcessingException {
-        Doctor doctor = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
+        RegDocDtoRequest doctor = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-05-2020", "12-07-2020", 20);
         List<String> weekDays = new ArrayList<>();
         weekDays.add("INVALID");
         WeekSchedule weekSchedule = new WeekSchedule("16:00", "17:00", weekDays);
-        String dateStart = "05-05-2020";
-        String dateEnd = "12-07-2020";
+        doctor.setWeekSchedule(weekSchedule);
         try {
-            regDocInvalidParams(doctor, weekSchedule, dateStart, dateEnd, 20);
+            regDocInvalidParams(doctor);
             fail();
         } catch (HttpStatusCodeException ex) {
             String responseString = ex.getResponseBodyAsString();
@@ -247,17 +223,17 @@ public class TestValidation extends TestRestTemplate {
 
     @Test
     public void testRegDoctorWithTwoSchedules() throws JsonProcessingException {
-        Doctor doctor = new Doctor("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a");
+        RegDocDtoRequest doctor = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-07-2020", "12-07-2020", 20);
         List<String> weekDays = new ArrayList<>();
         weekDays.add("Mon");
         WeekSchedule weekSchedule = new WeekSchedule("14:00", "17:00", weekDays);
+        doctor.setWeekSchedule(weekSchedule);
         List<WeekDaysSchedule> weekDaysSchedules = new ArrayList<>();
         WeekDaysSchedule weekDaysSchedule = new WeekDaysSchedule("Thu", "12:00", "13:00");
         weekDaysSchedules.add(weekDaysSchedule);
-        String dateStart = "05-07-2020";
-        String dateEnd = "12-07-2020";
+        doctor.setWeekDaysSchedules(weekDaysSchedules);
         try {
-            regDocInvalidParams(doctor, weekSchedule, weekDaysSchedules, dateStart, dateEnd, 20);
+            regDocInvalidParams(doctor);
             fail();
         } catch (HttpStatusCodeException ex) {
             String responseString = ex.getResponseBodyAsString();
@@ -283,7 +259,7 @@ public class TestValidation extends TestRestTemplate {
     @ParameterizedTest
     @MethodSource("phoneParams")
     public void testInvalidPhoneNumber(String phone) throws JsonProcessingException {
-        Patient patient = new Patient("Василий","Первый", "Иванович", "fvdfvde", "frfrfersf", "efdef@wefwe.ru", "faffasf", "+79845447788");
+        RegPatientDtoRequest patient = new RegPatientDtoRequest("Василий","Первый", "Иванович", "efdef@wefwe.ru", "frfrfersf", "+79845447788", "faffasf", "fvdfvde");
         patient.setPhone(phone);
         try {
             regPatientInvalidParams(patient);
