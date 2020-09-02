@@ -1,4 +1,4 @@
-# thumbtack_sunday_school_2020_1_mikhail_anufriev
-# Prototype of REST Server foe hospital 
+# Prototype of REST Server for hospital 
 # Spring boot / MyBatis / MySQL
+# Mikhail Anufriev 2020
 
