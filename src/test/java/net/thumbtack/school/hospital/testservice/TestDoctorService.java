@@ -63,7 +63,6 @@ public class TestDoctorService extends TestServiceBase {
         RegDoctorDtoResponse response = doctorService.getDoctor(docId1, "yes", null, null, tokenPatient1);
         assertEquals(docId1, response.getId());
         assertEquals(response1.getLastName(), response.getLastName());
-        assertEquals("Мураев", response.getSchedule().get(0).getDaySchedule().get(0).getPatient().getLastName());
     }
 
     @Test

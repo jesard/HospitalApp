@@ -21,6 +21,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestRestTemplate extends TestBase {
 
     protected static RestTemplate template = new RestTemplate();
+
 
     @Autowired
     protected ObjectMapper mapper;
@@ -131,7 +133,7 @@ public class TestRestTemplate extends TestBase {
 
     @Test
     public void testRegisterDoctor() throws JsonProcessingException {
-        RegDocDtoRequest doctor = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a","05-07-2020", "05-08-2020", 20);
+        RegDocDtoRequest doctor = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a",dateStart, dateEnd, 20);
         RegDoctorDtoResponse response = regDoctor(doctor);
         Assertions.assertNotNull(response);
         assertEquals("Веретенников", response.getLastName());
@@ -139,8 +141,8 @@ public class TestRestTemplate extends TestBase {
 
     @Test
     public void testDoctorBusyByAppointment() throws JsonProcessingException {
-        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-07-2020", "05-08-2020", 20);
-        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", "05-07-2020", "05-08-2020", 20);
+        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", dateStart, dateEnd, 20);
+        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", dateStart, dateEnd, 20);
         RegPatientDtoRequest patient1 = new RegPatientDtoRequest("Василий","Первый", "Иванович", "efdef@wefwe.ru", "frfrfersf", "+79845447788", "faffasf", "fvdfvdesdf");
         RegPatientDtoRequest patient2 = new RegPatientDtoRequest("Иван","Второй", "Михайлович", "erf@wefwe.ru", "eerervervre", "+79912343322", "eerferf", "evkmervlke");
         RegPatientDtoResponse responsePatient1 = regPatient(patient1);
@@ -186,8 +188,8 @@ public class TestRestTemplate extends TestBase {
 
     @Test
     public void testDoctorBusyByCommission() throws JsonProcessingException {
-        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-07-2020", "05-08-2020", 20);
-        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", "05-07-2020", "05-08-2020", 20);
+        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", dateStart, dateEnd, 20);
+        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", dateStart, dateEnd, 20);
         RegPatientDtoRequest patient1 = new RegPatientDtoRequest("Василий","Первый", "Иванович", "efdef@wefwe.ru", "frfrfersf", "+79845447788", "faffasf", "fvdfvdesdf");
         RegPatientDtoRequest patient2 = new RegPatientDtoRequest("Иван","Второй", "Михайлович", "erf@wefwe.ru", "eerervervre", "+79912343322", "eerferf", "evkmervlke");
         RegPatientDtoResponse responsePatient1 = regPatient(patient1);
@@ -235,8 +237,8 @@ public class TestRestTemplate extends TestBase {
     @Test
     public void testComplexScenario() throws JsonProcessingException {
 
-        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", "05-07-2020", "05-08-2020", 20);
-        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", "05-07-2020", "05-08-2020", 20);
+        RegDocDtoRequest doctor1 = new RegDocDtoRequest("Марат", "Веретенников", "Васильевич", "eregergwww", "vdfvffvdfv", "surgeon", "302a", dateStart, dateEnd, 20);
+        RegDocDtoRequest doctor2 = new RegDocDtoRequest("Вениамин", "Жораев", "Никодимович", "eregwww", "vsdvsvvvff", "therapist", "111", dateStart, dateEnd, 20);
         RegPatientDtoRequest patient1 = new RegPatientDtoRequest("Василий","Первый", "Иванович", "efdef@wefwe.ru", "frfrfersf", "+79845447788", "faffasf", "fvdfvdesdf");
         RegPatientDtoRequest patient2 = new RegPatientDtoRequest("Иван","Второй", "Михайлович", "erf@wefwe.ru", "eerervervre", "+79912343322", "eerferf", "evkmervlke");
         RegPatientDtoRequest patient3 = new RegPatientDtoRequest("Евгений", "Третий", "", "ferfe@wewe.ww", "fwfwe23fw", "+79911235522", "wefwefwef", "erkfreew");
@@ -288,17 +290,17 @@ public class TestRestTemplate extends TestBase {
         HttpHeaders headersDelDoc = new HttpHeaders();
         headersDelDoc.setContentType(MediaType.APPLICATION_JSON);
         headersDelDoc.add("Cookie", "JAVASESSIONID=" + tokenAdmin);
-        DeleteDoctorDtoRequest deleteDoctorDto = new DeleteDoctorDtoRequest("06-07-2020");
+        DeleteDoctorDtoRequest deleteDoctorDto = new DeleteDoctorDtoRequest(LocalDate.now().plusDays(1).format(formatterDate));
         HttpEntity<String> delDoctor2Req = new HttpEntity<>(mapper.writeValueAsString(deleteDoctorDto), headersDelDoc);
         template.exchange(BASEURL + "/doctors/" + docId2, HttpMethod.DELETE, delDoctor2Req, String.class).getBody();
-        // update schedule Doc 1
+        // update schedule for Doc 1
         List<String> weekDays = new ArrayList<>();
         weekDays.add("Tue");
         String newSlotStart = "17:00";
         String newSlotEnd = "19:00";
         WeekSchedule weekSchedule = new WeekSchedule(newSlotStart, newSlotEnd, weekDays);
-        String newScheduleStart = "20-07-2020";
-        String newScheduleEnd = "20-08-2020";
+        String newScheduleStart = LocalDate.now().plusWeeks(1).format(formatterDate);
+        String newScheduleEnd = LocalDate.now().plusWeeks(6).format(formatterDate);
         RegDocDtoRequest newScheduleDto = new RegDocDtoRequest(newScheduleStart, newScheduleEnd, weekSchedule, 20);
         HttpHeaders headers3 = new HttpHeaders();
         headers3.setContentType(MediaType.APPLICATION_JSON);

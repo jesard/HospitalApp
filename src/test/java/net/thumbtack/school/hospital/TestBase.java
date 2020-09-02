@@ -33,6 +33,9 @@ public class TestBase {
     protected final DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     protected final DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("HH:mm");
 
+    protected String dateStart = LocalDate.now().format(formatterDate);
+    protected String dateEnd = LocalDate.now().plusMonths(1).format(formatterDate);
+
     @BeforeAll()
     public static void setUp() {
         if (!setUpIsDone) {
