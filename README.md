@@ -8,55 +8,62 @@ It accepts a JSON in specific format, make a record to MySQL DB and answers with
 POST /api/patients
 
 Request:
+```json
 {
-    "firstName": "John", 
-    "lastName": "Smith", 
-    "patronymic": "Murray",  // not required
-    "email": "example@example.com", 
-    "address": "123 Durana st", 
-    "phone": "+79995461444", 
-    "login": "Qwerty", 
-    "password": "asdfg" 
+    "firstName": "John",   
+    "lastName": "Smith",   
+    "patronymic": "Murray",  
+    "email": "example@example.com",   
+    "address": "123 Durana st",   
+    "phone": "+79995461444",   
+    "login": "Qwerty",   
+    "password": "asdfg"   
 }
+```
 
-Response:
-cookie: JAVASESSIONID
-{
-       "id": 1, 
-       "firstName": "John", 
-       "lastName": "Smith", 
-       "patronymic": "Murray", 
-       "email": "example@example.com", 
-       "address": "123 Durana st", 
-       "phone": "79995461444"
-  }
+Response:  
+cookie: JAVASESSIONID  
+```json
+{  
+       "id": 1,   
+       "firstName": "John",   
+       "lastName": "Smith",   
+       "patronymic": "Murray",   
+       "email": "example@example.com",   
+       "address": "123 Durana st",   
+       "phone": "79995461444"  
+  }  
+```
 ___
 
 **Registration with existing login:**
 POST /api/patients
 
 Request:
-{
-    "firstName": "John", 
-    "lastName": "Smith", 
-    "patronymic": "Murray",  // not required
-    "email": "example@example.com", 
-    "address": "123 Durana st", 
-    "phone": "+79995461444", 
-    "login": "Qwerty", 
-    "password": "asdfg" 
-}
-
-Response:
-{
-     "errors" : [
-        {
-            "errorCode": "LOGIN_ALREADY_EXISTS" ,
-            "field": "login", 
-            "message": "User Qwerty already exists" 
-        }
-  ]
-}
+```json
+{  
+    "firstName": "John",   
+    "lastName": "Smith",   
+    "patronymic": "Murray", 
+    "email": "example@example.com",   
+    "address": "123 Durana st",   
+    "phone": "+79995461444",   
+    "login": "Qwerty",   
+    "password": "asdfg"   
+}  
+```
+Response:  
+```json
+{  
+     "errors" : [  
+        {  
+            "errorCode": "LOGIN_ALREADY_EXISTS" ,  
+            "field": "login",   
+            "message": "User Qwerty already exists"   
+        }  
+  ]  
+}  
+```
 
 ___
 Mikhail Anufriev 2020
